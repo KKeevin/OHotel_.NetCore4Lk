@@ -1,0 +1,442 @@
+﻿<main class="app-content" id="HotelInfoVue">
+    <!-- 所在位置 -->
+    <div class="app-title">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">系統管理&nbsp;</li>
+            <li class="breadcrumb-item active">後端使用者管理{{ breadcrumb[contentNow] }}</li>
+        </ol>
+    </div>
+    <!-- 所在位置 end-->
+    <!-- 內容 -->
+    <div class=" tile">
+        <div class="tabs mt-none">
+            <div @*v-if="(contentNow==1)&& (PV==1)"*@>
+                @* 主要 *@
+                <ul class="nav nav-tabs nav-justifie">
+                    <li class="active"><a href="#hotel_info" data-toggle="tab" aria-expanded="true"><i class="fa fa-edit"></i>基本資料</a></li>
+                    <li class=""><a href="#profile_info" data-toggle="tab" aria-expanded="false"><i class="fa fa-edit"></i>飯店介紹</a></li>
+                    <li class=""><a href="#traffic_info" data-toggle="tab" aria-expanded="false"><i class="fa fa-edit"></i>交通資訊</a></li>
+                </ul>
+                <div class="tab-content">
+                    <!--頁籤--基本資料-->
+                    <div class="tab-pane fade clearfix active in" id="hotel_info">
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>所屬縣市</label>
+                            <div class="col-md-3">
+                                <select name="F_I_HANo" id="F_I_HANo" class="form-control">
+                                    <option value="1">基隆市</option>
+                                    <option value="2">台北市</option>
+                                    <option value="3">新北市</option>
+                                    <option value="7">宜蘭縣</option>
+                                    <option value="4">桃園市</option>
+                                    <option value="5">新竹市</option>
+                                    <option value="6">新竹縣</option>
+                                    <option value="8">苗栗縣</option>
+                                    <option value="9">台中市</option>
+                                    <option value="11">彰化縣</option>
+                                    <option value="16">雲林縣</option>
+                                    <option value="15">南投縣</option>
+                                    <option value="21">嘉義市</option>
+                                    <option value="12">嘉義縣</option>
+                                    <option value="18">台南市</option>
+                                    <option value="19">高雄市</option>
+                                    <option value="22">屏東縣</option>
+                                    <option value="23">花蓮縣</option>
+                                    <option value="24">台東縣</option>
+                                    <option value="25">澎湖縣</option>
+                                    <option value="26">蘭嶼</option>
+                                    <option value="27">綠島</option>
+                                    <option value="28">小琉球</option>
+                                    <option value="13">金門縣</option>
+                                    <option value="14">馬祖</option>
+                                </select>
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>所屬鄉鎮</label>
+                            <div class="col-md-3">
+                                <select name="F_I_HTNo" id="F_I_HTNo" class="form-control"><option value="251">新興區</option><option value="252">前金區</option><option value="253">苓雅區</option><option value="254">鹽埕區</option><option value="255">鼓山區</option><option value="256">旗津區</option><option value="257">前鎮區</option><option value="258" selected="">三民區</option><option value="259">楠梓區</option><option value="260">小港區</option><option value="261">左營區</option><option value="263">仁武區</option><option value="264">大社區</option><option value="265">岡山區</option><option value="266">路竹區</option><option value="268">阿蓮區</option><option value="269">田寮區</option><option value="270">燕巢區</option><option value="271">橋頭區</option><option value="272">梓官區</option><option value="273">彌陀區</option><option value="274">永安區</option><option value="275">湖內區</option><option value="276">鳳山區</option><option value="277">大寮區</option><option value="278">林園區</option><option value="279">鳥松區</option><option value="280">大樹區</option><option value="281">旗山區</option><option value="282">美濃區</option><option value="283">六龜區</option><option value="284">內門區</option><option value="285">杉林區</option><option value="286">甲仙區</option><option value="287">桃源區</option><option value="288">那瑪夏區</option><option value="289">茂林區</option><option value="290">茄萣區</option></select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>飯店名稱</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_HName" id="F_S_NH_HName" type="text" placeholder="飯店名稱" v-model="editData[0].HName">
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>飯店地址</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_HAddr" id="F_S_NH_HAddr" type="text" placeholder="飯店地址" v-model="editData[0].HAddr">
+                            </div>
+
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>飯店電話</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_HTel" id="F_S_NH_HTel" type="text" placeholder="飯店電話" v-model="editData[0].HTel">
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red"></span>飯店Email</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_HEmail" id="F_S_NH_HEmail" type="text" placeholder="飯店Email" v-model="editData[0].HEmail">
+                            </div>
+                        </div>
+                    </div>
+                    <!--頁籤--飯店介紹-->
+                    <div class="tab-pane fade clearfix" id="profile_info">
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>網站關鍵字</label>
+                            <div class="col-md-10">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input class="form-control" name="F_S_NH_HSearchWD" id="F_S_NH_HSearchWD" type="text" value="高雄飯店,最便宜飯店" placeholder="飯店網站關鍵字">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mt">(輸入字串請用逗號隔開。例如:名稱,高雄,三民區)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>網站描述</label>
+                            <div class="col-md-10">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <input class="form-control" name="F_S_NH_HDescription" id="F_S_NH_HDescription" type="text" value="很棒的飯店" placeholder="網站描述">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mt">(輸入描述介紹)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>飯店FaceBook</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_HFB" id="F_S_NH_HFB" type="text" value="https://www.facebook.com/easytravelfans/" placeholder="飯店FaceBook">
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red"></span>飯店LineID</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_HLineID" id="F_S_NH_HLineID" type="text" @*value="@easy4Fun"*@ placeholder="飯店LineID">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>飯店LineAt</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_HLineAt" id="F_S_NH_HLineAt" type="text" value="https://line.me/R/ti/p/%40vkl1788p" placeholder="飯店LineAt">
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red"></span>飯店登記編號</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_TWStayNo" id="F_S_NH_TWStayNo" type="text" value="高雄市旅館87號" placeholder="飯店登記編號,例如:臺南市旅館311號">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>進房時間</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_CheckinTime" id="F_S_NH_CheckinTime" type="text" value="平日：18:00，假日：20:00" placeholder="進房時間">
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red"></span>退房時間</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_CheckoutTime" id="F_S_NH_CheckoutTime" type="text" value="上午11:00前" placeholder="退房時間">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>最晚保留時間</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_ReserveTime" id="F_S_NH_ReserveTime" type="text" value="20:00，如需延遲進房請電洽飯店，如超過最晚保留時間未致電飯店延長保留時間或無故不到，則視同取消訂房。" placeholder="最晚保留時間">
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red"></span>正式營業</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_FormalOpen" id="F_S_NH_FormalOpen" type="text" value="99年12月1日" placeholder="正式營業">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>最近裝修</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_Decoration" id="F_S_NH_Decoration" type="text" value="104年12月31日" placeholder="最近裝修">
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red"></span>榮譽事蹟</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_Deeds" id="F_S_NH_Deeds" type="text" value="高雄首創地方特色飯店" placeholder="榮譽事蹟">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">住房須知</label>
+                            <div class="col-md-8">
+                                <textarea id="F_S_H_RoomAdvert" placeholder="" name='F_S_H_RoomAdvert' class="form-control" rows="10"></textarea>
+                                <script>try { CKEDITOR.replace('F_S_H_RoomAdvert', { filebrowserUploadUrl: "CKEditorUpload.aspx", filebrowserImageBrowseUrl: "CKEditorBrowse.aspx", extraPlugins: "colorbutton,colordialog,youtube", image_previewText: " " }); } catch (e) { }</script>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">飯店簡介</label>
+                            <div class="col-md-8">
+                                <textarea id="F_S_H_HBrief" placeholder="" name='F_S_H_HBrief' class="form-control" rows="10">1225444</textarea>
+                                <script>try { CKEDITOR.replace('F_S_H_HBrief', { filebrowserUploadUrl: "CKEditorUpload.aspx", filebrowserImageBrowseUrl: "CKEditorBrowse.aspx", extraPlugins: "colorbutton,colordialog,youtube", image_previewText: " " }); } catch (e) { }</script>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">貼心提醒</label>
+                            <div class="col-md-8">
+                                <textarea id="F_S_H_CloseRemind" placeholder="" name='F_S_H_CloseRemind' class="form-control" rows="10">45587454</textarea>
+                                <script>try { CKEDITOR.replace('F_S_H_CloseRemind', { filebrowserUploadUrl: "CKEditorUpload.aspx", filebrowserImageBrowseUrl: "CKEditorBrowse.aspx", extraPlugins: "colorbutton,colordialog,youtube", image_previewText: " " }); } catch (e) { }</script>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">備註</label>
+                            <div class="col-md-8">
+                                <textarea id="F_S_H_Note" placeholder="" name='F_S_H_Note' class="form-control" rows="10">45474544</textarea>
+                                <script>try { CKEDITOR.replace('F_S_H_Note', { filebrowserUploadUrl: "CKEditorUpload.aspx", filebrowserImageBrowseUrl: "CKEditorBrowse.aspx", extraPlugins: "colorbutton,colordialog,youtube", image_previewText: " " }); } catch (e) { }</script>
+                            </div>
+                        </div>
+                    </div>
+                    <!--頁籤--交通資訊-->
+                    <div class="tab-pane fade clearfix" id="traffic_info">
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>飯店經緯度</label>
+                            <div class="col-md-3">
+                                <div class="col-sm-4">
+                                    <input class="form-control" name="F_S_NH_HLatitude" id="F_S_NH_HLatitude" type="text" value="<%=HLatitude %>" placeholder="緯度:22.6200518">
+                                </div>
+                                <div class="col-sm-4">
+                                    <input class="form-control" name="F_S_NH_HLongitude" id="F_S_NH_HLongitude" type="text" value="<%=HLongitude %>" placeholder="經度:120.3026626">
+                                </div>
+                                <div class="col-sm-3">
+                                    <button class="btn btn-primary" id="GMapLongLat">取經緯度</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">交通導引</label>
+                            <div class="col-md-8">
+                                <first-component></first-component>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tile-footer">
+                    <div class="padl" align="center">
+                        <button class="btn btn-primary" type="button" @@click="update"><i class="fa fa-save">儲存</i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+@section Scripts{
+    <script>
+        // 【 Website/Info.cshtml 】
+        const HotelInfoVue = Vue.createApp({
+            head() {
+                return {
+                    script: [
+                        {
+                            src: '~/lib/ckeditor/ckeditor.js',
+                            type: 'text/javascript'
+                        }
+                    ]
+                };
+            },
+            data() {
+                return {
+                    // 主要顯示資料存放區 //
+                    RenderingData: null,
+                    // 現在頁面 & 導覽列  //
+                    contentNow: 1,
+                    breadcrumb: {
+                        1: '',
+                        2: '-新增',
+                        3: '-修改',
+                    },
+                    //   新增 & 編輯   //
+                    addData: {},
+                    editData: {},
+                    editMINo: null,
+                    //  放在  AXIOS 傳遞 //
+                    pageSize: 10, //一頁幾筆資料
+                    pageNow: 1,
+                    Sort: 'ASC',
+                    Column: '%5BOrder%5D',
+                    /* ------------------ */
+                    pageTotal: null,
+                    selectedItems: [],
+                    /* ------------------ */
+                    SysClassData: null,
+                    /* ------------------ */
+                    PV: 0,
+                    PA: 0,
+                    PD: 0,
+                    PU: 0,
+                    PG: 0,
+                    P1: 0,
+                    P2: 0,
+                };
+            },
+            created() {
+                // 設置預設值: 新增
+                this.addData = {
+                    mCNo: 0,
+                    powerView: 0,
+                    powerAdd: 0,
+                    powerDel: 0,
+                    powerUpdate: 0,
+                    powerGrant: 0,
+                    power1: '',
+                    power2: '',
+                    order: '0'
+                };
+            },
+            mounted() {
+                let _this = this;
+                _this.content();
+                //_this.getPermissionValue('PV');
+                //_this.getPermissionValue('PA');
+                //_this.getPermissionValue('PD');
+                //_this.getPermissionValue('PU');
+                //_this.getPermissionValue('PG');
+                //_this.getPermissionValue('P1');
+                //_this.getPermissionValue('P2');
+            },
+            components: {
+                'first-component': {
+                    template: `
+                <textarea id="F_S_H_TrafficAdvert" placeholder="" name='F_S_H_TrafficAdvert' class="form-control" rows="10"></textarea>
+                      <script>
+                try {
+                  CKEDITOR.replace('F_S_H_TrafficAdvert', {
+                    filebrowserUploadUrl: "CKEditorUpload.aspx",
+                    filebrowserImageBrowseUrl: "CKEditorBrowse.aspx",
+                    extraPlugins: "colorbutton,colordialog,youtube",
+                    image_previewText: " "
+                  });
+                } catch (e) {}
+      `
+        }
+    },
+    methods: {
+        content(Num) {
+            let _this = this;
+            _this.contentNow = Num;
+            // ↓取得目前編輯資料
+                    axios.get(`/api/HotelDetail/GetHotelInfo`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }).then(
+                response => {
+                    let _this = this;
+                    _this.editData = response.data;
+                }
+            ).catch(
+                error => {
+                    console.log(error);
+                }
+            );
+        },
+        // [ 時間格式轉換 ]
+        formatTime(timeStr) {
+            const date = new Date(timeStr);
+            if (isNaN(date.getTime())) {
+                // 時間格式不正確，返回空字串
+                return '';
+            }
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const day = ('0' + date.getDate()).slice(-2);
+            const hours = ('0' + date.getHours()).slice(-2);
+            const minutes = ('0' + date.getMinutes()).slice(-2);
+            const seconds = ('0' + date.getSeconds()).slice(-2);
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        },
+        // [ 獲取連結的小物 (測試) ]
+        linkGetPage: async function () {
+            let _this = this;
+            var getUrlString = location.href;
+            var url = new URL(getUrlString);
+            //console.log(url.searchParams.get('page'));
+            pageNow = url.searchParams.get('page');
+            searchItem = url.searchParams.get('search');
+            if (pageNow === null) {
+                pageNow = 1;
+            }
+            _this.getDataPaged(pageNow);
+        },
+        // ----------------------------------------------------
+        // 【 修改 】
+        update() {
+            let _this = this;
+            let request = {
+                HANo: _this.editData.HANo,
+                HTNo: _this.editData.HTNo,
+                HName: _this.editData.HName,
+                HTel: _this.editData.HTel,
+                HEmail: _this.editData.HEmail,
+                HAddr: _this.editData.HAddr,
+                Citizen: _this.editData.Citizen,
+                HSearchWD: _this.editData.HSearchWD,
+                HDescription: _this.editData.HDescription,
+                HLongitude: _this.editData.HLongitude,
+                HLatitude: _this.editData.HLatitude,
+                HLineID: _this.editData.HLineID,
+                HLineAt: _this.editData.HLineAt,
+                HFB: _this.editData.HFB,
+                TWStayNo: _this.editData.TWStayNo,
+                CheckinTime: _this.editData.CheckinTime,
+                ReserveTime: _this.editData.ReserveTime,
+                CheckoutTime: _this.editData.CheckoutTime,
+                FormalOpen: _this.editData.FormalOpen,
+                Decoration: _this.editData.Decoration,
+                Deeds: _this.editData.Deeds,
+                RoomAdvert: _this.editData.RoomAdvert,
+                HBrief: _this.editData.HBrief,
+                CloseRemind: _this.editData.CloseRemind,
+                Note: _this.editData.Note,
+                TrafficAdvert: _this.editData.TrafficAdvert,
+                MTime: _this.editData.MTime,
+                MSNo: _this.editData.MSNo
+            };
+                    axios.patch(`/api/HotelDetail/UpdateEHotelInfo/4`, request, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    })
+                .then(response => {
+                    alert("修改成功");
+                    window.location = `/System/Item`;
+                })
+                .catch(error => alert(error));
+        },
+        // ----------------------------------------------------
+        // 【 權限 】
+        getPermissionValue(permiss, minNo = '2') {
+            const token = localStorage.getItem('Token');
+            axios.get(`/api/AccountLogin/GetUserInfo`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    const STNo = response.data.STNo;
+                            axios.get(`/api/AccountLogin/GetStaffPermissions/${STNo}`, {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`
+                                }
+                            })
+                        .then(response => {
+                            const permissions = response.data;
+                            const permission = permissions.find(p => p.MINo === parseInt(minNo, 10));
+                            if (permission) {
+                                this.permissionValue = permission
+                                this.$data[permiss] = this.permissionValue[permiss];
+                            } else {
+                                this.permissionValue = null;
+                                this.$data[permiss] = this.permissionValue;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+    },
+}).mount("#HotelInfoVue");
+    </script>
+}

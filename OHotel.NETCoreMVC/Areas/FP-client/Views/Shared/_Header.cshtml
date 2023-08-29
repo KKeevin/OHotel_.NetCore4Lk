@@ -1,0 +1,439 @@
+﻿<header id="header" class="clearfix shadow">
+    <h1 class="logo"> <a asp-controller="Home" asp-action="Index"><img src="~/img/fp/logo.png" width="208" height="140" alt="飯店LOGO"></a></h1>
+    <!-- 選單 -->
+    <div style="cursor:pointer" onclick="openNav()">
+        <i class="fa fa-bars" aria-hidden="true"></i>
+    </div>
+    <div id="mySidenav" class="sidenav clearfix">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <nav class="nav">
+            <ul>
+                <li><a asp-controller="About" asp-action="Index" title="關於我們">關於我們</a></li>
+                <li><a asp-controller="Rooms" asp-action="Index" title="客房">客房</a></li>
+                <li><a asp-controller="Facility" asp-action="Index" title="設施">設施</a></li>
+                <li><a asp-controller="sights" asp-action="Index" title="週邊景點">週邊景點</a></li>
+                <li><a asp-controller="traffic" asp-action="Index" title="交通位置">交通位置</a></li>
+                <li><a asp-controller="news" asp-action="Index" title="最新消息">最新消息</a></li>
+                <li><a href="javascript: void(0)" data-toggle="modal" data-target="#myModal" title="聯絡我們">聯絡我們</a></li>
+                <li><a href="https://officialhotel.easytravel.com.tw/officialhotel_order/book_step1.aspx?HCode=H45CT2209&amp;AgCode=H45Ag68-0t9HBi" target="_blank">訂房</a></li>
+@*                <li>
+                    <a href="javascript: void(0)" class="language"><div id="google_translate_element"></div></a>
+                </li>*@
+            </ul>
+        </nav>
+    </div>
+    <!-- 選單end -->
+</header>
+<!-- loading -->
+<div class="loader-wrap">
+    <span class="loader loader-bars"><span> </span></span>
+</div>
+<!-- 註冊/登入box -->
+<div class="modal fade" id="join_member" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <i class="fa fa-times"></i>
+            </button>
+            <div class="panel panel-login">
+                <div class="panel-heading">
+                    <a href="#" class="active" id="login-form-link" title="登入Login">登入Login</a>│
+                    <a href="#" id="register-form-link" title="註冊Register">註冊Register</a>
+                    <hr>
+                </div>
+
+                <div class="panel-body">
+                    <!-- 登入-->
+                    <form id="login-form" method="post" role="form" style="display: block;">
+                        <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="使用者帳號" value="">
+                        <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="密碼">
+                        <div class="col_2"><input type="text" class="form-control" id="inputPassword" placeholder="驗證碼"></div>
+                        <div class="col_2"><div class="mt2 left"><iframe class="" src='https://bestweb.easytravel.com.tw/sys/ck.aspx?n=20180223161838' width='60' height='26' align=bottom name='frame1' id='frame1' marginWidth=0 marginHeight=0 frameBorder=0 scrolling=no></iframe></div><span><a href="#" class="replace" title="在換一個">在換一個 <i class="fa fa-undo"></i></a></span></div>
+                        <a href="fp.html" class="forgot-password" title="忘記密碼?">忘記密碼?</a>
+                        <input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="登入">
+                        <div class="divider1 clearfix">
+                            <span class="mm-or1">或使用其他系統登入</span>
+                            <ul class="other_link">
+                                <li><a href="javascript:void(0)" onclick="fbLogin();" class="btstyle loginbtn02"><span><i class="fa fa-facebook " aria-hidden="true"></i></span>登入</a></li>
+                                <li><a href="javascript:void(0)" onclick="googleLogin();" class="btstyle loginbtn03"><span><i class="fa fa-google " aria-hidden="true"></i></span>登入</a></li>
+                                <li><a href="javascript:void(0)" onclick="Auth();" class="btstyle loginbtn04"><span class="line"><img src="~/img/fp/line.png"></span>登入</a></li>
+                            </ul>
+                        </div>
+                    </form>
+                    <!--註冊 -->
+                    <form id="register-form" method="post" role="form" style="display: none;">
+                        <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="暱稱" value="">
+                        <input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="Email" value="">
+                        <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="密碼">
+                        <input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control" placeholder="確認密碼">
+                        <select name=question id=question class="form-control">
+                            <option value=''>請選擇自設問題...</option>
+                            <option value='就讀的國小是？'>就讀的國小是？</option>
+                            <option value='最喜歡的偶像是？'>最喜歡的偶像是？</option>
+                            <option value='最敬重的老師是？'>最敬重的老師是？</option>
+                            <option value='第一台車的車牌號碼為？'>第一台車的車牌號碼為？</option>
+                            <option value='第一隻寵物名字？'>第一隻寵物名字？</option>
+                            <option value='最喜歡吃的食物？'>最喜歡吃的食物？</option>
+                            <option value='other'>自行輸入</option>
+                        </select>
+                        <input type="text" class="form-control" name=answer id=answer value="自設問題回答" onfocus=this.value ='' ; placeholder='自設問題回答' title="自設問題回答" onBlur=ckalldata(7); autocorrect='off' autocapitalize='off' autocomplete='off' aria-required='true' />
+                        <div class="container ">
+                            <div class="row">
+                                <div class="col-md-1 col-3 p-0 mt2">生日</div>
+                                <div class="col-md-5 col-9 p-0">
+                                    <select name="YY" id="YY" data="birthday-drop-down" class="form-control">
+                                        <option value="" selected>年</option>
+                                        <option value=1911>1911（民國0年）</option>
+                                        <option value=1912>1912（民國1年）</option>
+                                        <option value=1913>1913（民國2年）</option>
+                                        <option value=1914>1914（民國3年）</option>
+                                        <option value=1915>1915（民國4年）</option>
+                                        <option value=1916>1916（民國5年）</option>
+                                        <option value=1917>1917（民國6年）</option>
+                                        <option value=1918>1918（民國7年）</option>
+                                        <option value=1919>1919（民國8年）</option>
+                                        <option value=1920>1920（民國9年）</option>
+                                        <option value=1921>1921（民國10年）</option>
+                                        <option value=1922>1922（民國11年）</option>
+                                        <option value=1923>1923（民國12年）</option>
+                                        <option value=1924>1924（民國13年）</option>
+                                        <option value=1925>1925（民國14年）</option>
+                                        <option value=1926>1926（民國15年）</option>
+                                        <option value=1927>1927（民國16年）</option>
+                                        <option value=1928>1928（民國17年）</option>
+                                        <option value=1929>1929（民國18年）</option>
+                                        <option value=1930>1930（民國19年）</option>
+                                        <option value=1931>1931（民國20年）</option>
+                                        <option value=1932>1932（民國21年）</option>
+                                        <option value=1933>1933（民國22年）</option>
+                                        <option value=1934>1934（民國23年）</option>
+                                        <option value=1935>1935（民國24年）</option>
+                                        <option value=1936>1936（民國25年）</option>
+                                        <option value=1937>1937（民國26年）</option>
+                                        <option value=1938>1938（民國27年）</option>
+                                        <option value=1939>1939（民國28年）</option>
+                                        <option value=1940>1940（民國29年）</option>
+                                        <option value=1941>1941（民國30年）</option>
+                                        <option value=1942>1942（民國31年）</option>
+                                        <option value=1943>1943（民國32年）</option>
+                                        <option value=1944>1944（民國33年）</option>
+                                        <option value=1945>1945（民國34年）</option>
+                                        <option value=1946>1946（民國35年）</option>
+                                        <option value=1947>1947（民國36年）</option>
+                                        <option value=1948>1948（民國37年）</option>
+                                        <option value=1949>1949（民國38年）</option>
+                                        <option value=1950>1950（民國39年）</option>
+                                        <option value=1951>1951（民國40年）</option>
+                                        <option value=1952>1952（民國41年）</option>
+                                        <option value=1953>1953（民國42年）</option>
+                                        <option value=1954>1954（民國43年）</option>
+                                        <option value=1955>1955（民國44年）</option>
+                                        <option value=1956>1956（民國45年）</option>
+                                        <option value=1957>1957（民國46年）</option>
+                                        <option value=1958>1958（民國47年）</option>
+                                        <option value=1959>1959（民國48年）</option>
+                                        <option value=1960>1960（民國49年）</option>
+                                        <option value=1961>1961（民國50年）</option>
+                                        <option value=1962>1962（民國51年）</option>
+                                        <option value=1963>1963（民國52年）</option>
+                                        <option value=1964>1964（民國53年）</option>
+                                        <option value=1965>1965（民國54年）</option>
+                                        <option value=1966>1966（民國55年）</option>
+                                        <option value=1967>1967（民國56年）</option>
+                                        <option value=1968>1968（民國57年）</option>
+                                        <option value=1969>1969（民國58年）</option>
+                                        <option value=1970>1970（民國59年）</option>
+                                        <option value=1971>1971（民國60年）</option>
+                                        <option value=1972>1972（民國61年）</option>
+                                        <option value=1973>1973（民國62年）</option>
+                                        <option value=1974>1974（民國63年）</option>
+                                        <option value=1975>1975（民國64年）</option>
+                                        <option value=1976>1976（民國65年）</option>
+                                        <option value=1977>1977（民國66年）</option>
+                                        <option value=1978>1978（民國67年）</option>
+                                        <option value=1979>1979（民國68年）</option>
+                                        <option value=1980>1980（民國69年）</option>
+                                        <option value=1981>1981（民國70年）</option>
+                                        <option value=1982>1982（民國71年）</option>
+                                        <option value=1983>1983（民國72年）</option>
+                                        <option value=1984>1984（民國73年）</option>
+                                        <option value=1985>1985（民國74年）</option>
+                                        <option value=1986>1986（民國75年）</option>
+                                        <option value=1987>1987（民國76年）</option>
+                                        <option value=1988>1988（民國77年）</option>
+                                        <option value=1989>1989（民國78年）</option>
+                                        <option value=1990>1990（民國79年）</option>
+                                        <option value=1991>1991（民國80年）</option>
+                                        <option value=1992>1992（民國81年）</option>
+                                        <option value=1993>1993（民國82年）</option>
+                                        <option value=1994>1994（民國83年）</option>
+                                        <option value=1995>1995（民國84年）</option>
+                                        <option value=1996>1996（民國85年）</option>
+                                        <option value=1997>1997（民國86年）</option>
+                                        <option value=1998>1998（民國87年）</option>
+                                        <option value=1999>1999（民國88年）</option>
+                                        <option value=2000>2000（民國89年）</option>
+                                        <option value=2001>2001（民國90年）</option>
+                                        <option value=2002>2002（民國91年）</option>
+                                        <option value=2003>2003（民國92年）</option>
+                                        <option value=2004>2004（民國93年）</option>
+                                        <option value=2005>2005（民國94年）</option>
+                                        <option value=2006>2006（民國95年）</option>
+                                        <option value=2007>2007（民國96年）</option>
+                                        <option value=2008>2008（民國97年）</option>
+                                        <option value=2009>2009（民國98年）</option>
+                                        <option value=2010>2010（民國99年）</option>
+                                        <option value=2011>2011（民國100年）</option>
+                                        <option value=2012>2012（民國101年）</option>
+                                        <option value=2013>2013（民國102年）</option>
+                                        <option value=2014>2014（民國103年）</option>
+                                        <option value=2015>2015（民國104年）</option>
+                                        <option value=2016>2016（民國105年）</option>
+                                        <option value=2017>2017（民國106年）</option>
+                                        <option value=2018>2018（民國107年）</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 col-6 p-0">
+                                    <select name="MM" id="MM" data="birthday-drop-down" class="form-control">
+                                        <option value="" selected>月</option>
+                                        <option value=1>1</option>
+                                        <option value=2>2</option>
+                                        <option value=3>3</option>
+                                        <option value=4>4</option>
+                                        <option value=5>5</option>
+                                        <option value=6>6</option>
+                                        <option value=7>7</option>
+                                        <option value=8>8</option>
+                                        <option value=9>9</option>
+                                        <option value=10>10</option>
+                                        <option value=11>11</option>
+                                        <option value=12>12</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3 col-6 p-0">
+                                    <select name="DD" id="DD" data="birthday-drop-down" class="form-control">
+                                        <option value="" selected>日</option>
+                                        <option value=1>1</option>
+                                        <option value=2>2</option>
+                                        <option value=3>3</option>
+                                        <option value=4>4</option>
+                                        <option value=5>5</option>
+                                        <option value=6>6</option>
+                                        <option value=7>7</option>
+                                        <option value=8>8</option>
+                                        <option value=9>9</option>
+                                        <option value=10>10</option>
+                                        <option value=11>11</option>
+                                        <option value=12>12</option>
+                                        <option value=13>13</option>
+                                        <option value=14>14</option>
+                                        <option value=15>15</option>
+                                        <option value=16>16</option>
+                                        <option value=17>17</option>
+                                        <option value=18>18</option>
+                                        <option value=19>19</option>
+                                        <option value=20>20</option>
+                                        <option value=21>21</option>
+                                        <option value=22>22</option>
+                                        <option value=23>23</option>
+                                        <option value=24>24</option>
+                                        <option value=25>25</option>
+                                        <option value=26>26</option>
+                                        <option value=27>27</option>
+                                        <option value=28>28</option>
+                                        <option value=29>29</option>
+                                        <option value=30>30</option>
+                                        <option value=31>31</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+
+                        若要繼續註冊，請先閱讀並同意特思得大飯店的<a href="#" title="服務條款">服務條款</a>與<a href="#" title="隱私權政策">隱私權政策</a>
+                        <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="註冊">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 註冊/登入box  END -->
+<!-- 燈箱1 電話訂房 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="head">
+                四方通行訂房專線
+            </div>
+            <div class="modal-body text-center one-line phonenumber ">
+                <i class="fa fa-phone" aria-hidden="true"></i>07-968-2715
+            </div>
+            <div class="footer bt-two">
+                <button type="button" class="btn fc-gray" data-dismiss="modal">取消</button>
+                <button type="button" onclick="location.href='tel:07-9682715'" class="btn fc-primary">撥打</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 燈箱5 月曆 -->
+<div class="modal fade scroll" id="calendar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+            <button type="button" class="angle-right btn"><i class="fa fa-angle-right"></i></button>
+            <button type="button" class="angle-left btn"><i class="fa fa-angle-left"></i></button>
+            <p class="text-center ">選擇您的住宿日期 <button type="button" class="close" data-dismiss="modal">X</button></p>
+            <div class="clearfix ">
+                <div class="bt-two"><p class="tyu">入住日期</p><span class="fc-green fc-nb">2019/07/15</span></div>
+                <div class="bt-two"><p class="tyu">退房日期</p><span class="fc-green fc-nb">2019/07/16</span></div>
+            </div>
+
+            <div class="modal-body  clearfix">
+                <div class="month-wrap">
+                    <div class="head1">
+                        <div class="month-title">2019年7月</div>
+                        <div class="week-wrap">一</div>
+                        <div class="week-wrap">二</div>
+                        <div class="week-wrap">三</div>
+                        <div class="week-wrap">四</div>
+                        <div class="week-wrap">五</div>
+                        <div class="week-wrap holiday">六</div>
+                        <div class="week-wrap holiday">日</div>
+                    </div>
+                    <div class="week-wrap"><span class="none">25</span></div>
+                    <div class="week-wrap"><span class="none">26</span></div>
+                    <div class="week-wrap"><span class="none">27</span></div>
+                    <div class="week-wrap"><span class="none">28</span></div>
+                    <div class="week-wrap"><span class="none">29</span></div>
+                    <div class="week-wrap holiday"><span class="none">30</span></div>
+                    <div class="week-wrap holiday"><span>1</span></div>
+                    <div class="week-wrap"><span>2</span></div>
+                    <div class="week-wrap"><span>3</span></div>
+                    <div class="week-wrap"><span>4</span></div>
+                    <div class="week-wrap"><span>5</span></div>
+                    <div class="week-wrap"><span>6</span></div>
+                    <div class="week-wrap holiday"><span>7</span></div>
+                    <div class="week-wrap holiday"><span>8</span></div>
+                    <div class="week-wrap"><span>9</span></div>
+                    <div class="week-wrap"><span>10</span></div>
+                    <div class="week-wrap"><span>11</span></div>
+                    <div class="week-wrap"><span>12</span></div>
+                    <div class="week-wrap"><span>13</span></div>
+                    <div class="week-wrap holiday"><span>14</span></div>
+                    <div class="week-wrap holiday"><span>15</span></div>
+                    <div class="week-wrap"><span>16</span></div>
+                    <div class="week-wrap"><span>17</span></div>
+                    <div class="week-wrap"><span>18</span></div>
+                    <div class="week-wrap"><span>19</span></div>
+                    <div class="week-wrap"><span>20</span></div>
+                    <div class="week-wrap holiday"><span>21</span></div>
+                    <div class="week-wrap holiday"><span>22</span></div>
+                    <div class="week-wrap"><span>23</span></div>
+                    <div class="week-wrap"><span>24</span></div>
+                    <div class="week-wrap"><span>25</span></div>
+                    <div class="week-wrap"><span>26</span></div>
+                    <div class="week-wrap"><span>27</span></div>
+                    <div class="week-wrap holiday"><span>28</span></div>
+                    <div class="week-wrap holiday"><span>29</span></div>
+                    <div class="week-wrap"><span>30</span></div>
+                    <div class="week-wrap"><span>31</span></div>
+
+                </div>
+                <div class="month-wrap">
+                    <div class="head1">
+                        <div class="month-title">2019年8月</div>
+                        <div class="week-wrap">一</div>
+                        <div class="week-wrap">二</div>
+                        <div class="week-wrap">三</div>
+                        <div class="week-wrap">四</div>
+                        <div class="week-wrap">五</div>
+                        <div class="week-wrap holiday">六</div>
+                        <div class="week-wrap holiday">日</div>
+                    </div>
+                    <div class="week-wrap"><span class="none">30</span></div>
+                    <div class="week-wrap"><span class="none">31</span></div>
+                    <div class="week-wrap"><span>1</span></div>
+                    <div class="week-wrap"><span>2</span></div>
+                    <div class="week-wrap"><span>3</span></div>
+                    <div class="week-wrap holiday"><span>4</span></div>
+                    <div class="week-wrap holiday"><span class="select">5</span></div>
+                    <div class="week-wrap hover"><span>6</span></div>
+                    <div class="week-wrap hover"><span>7</span></div>
+                    <div class="week-wrap hover"><span>8</span></div>
+                    <div class="week-wrap hover"><span>9</span></div>
+                    <div class="week-wrap hover"><span class="select">10</span></div>
+                    <div class="week-wrap holiday"><span>11</span></div>
+                    <div class="week-wrap holiday"><span>12</span></div>
+                    <div class="week-wrap"><span>13</span></div>
+                    <div class="week-wrap"><span>14</span></div>
+                    <div class="week-wrap"><span>15</span></div>
+                    <div class="week-wrap"><span>16</span></div>
+                    <div class="week-wrap"><span>17</span></div>
+                    <div class="week-wrap holiday"><span>18</span></div>
+                    <div class="week-wrap holiday"><span>19</span></div>
+                    <div class="week-wrap"><span>20</span></div>
+                    <div class="week-wrap"><span>21</span></div>
+                    <div class="week-wrap"><span>22</span></div>
+                    <div class="week-wrap"><span>23</span></div>
+                    <div class="week-wrap"><span>24</span></div>
+                    <div class="week-wrap holiday"><span>25</span></div>
+                    <div class="week-wrap holiday"><span>26</span></div>
+                    <div class="week-wrap"><span>27</span></div>
+                    <div class="week-wrap"><span>28</span></div>
+                    <div class="week-wrap"><span>29</span></div>
+                    <div class="week-wrap"><span>30</span></div>
+                    <div class="week-wrap"><span>31</span></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                4晚
+                <button type="button" class="btn btn-style02" data-dismiss="modal">完成</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 輪播大圖 -->
+<div id="head">
+    <div id="head-carousel">
+        <div class="banner-L"><img src="~/img/fp/1920-690-1.jpg" alt="飯店大圖"></div>
+        <div class="banner-L"><img src="~/img/fp/1920-690-2.jpg" alt="飯店大圖"></div>
+    </div>
+</div>
+<!-- 輪播大圖end -->
+<!-- 搜尋 -->
+<div id="search">
+    <div class="sbox shadow">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5">
+                    <a href="javascript: void(0)" class="select-warp search_day  d-flex" data-toggle="modal" data-target="#calendar" title="選擇您的住宿日期">
+                        <div class="days">
+                            <div class="wclm"><i class="fa fa-calendar-o"></i></div>
+                            <div class="check_in">入住日期<p>2019/06/22(五)</p></div>
+                            <div class="check_out">退房日期<p>2019/06/24(五)</p></div>
+                            <div class="wclm">3晚</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-5">
+                    <div class="select-warp">
+                        <select name="country" class="search_select">
+                            <option>選擇入住人數</option>
+                            <option>不分人數</option>
+                            <option>1人（房）</option>
+                            <option>2人（房）</option>
+                            <option>3人（房）</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <button type="button" class="btn btn-lg btn-resipon btn-rad" onclick="location.href='step1.html'">我要訂房</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 搜尋END -->

@@ -1,0 +1,950 @@
+﻿@{
+    //ViewData["Title"] = "";
+}
+
+<main class="app-content" id="StaffVue">
+    <!-- 所在位置 -->
+    <div class="app-title">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">系統管理&nbsp;</li>
+            <li class="breadcrumb-item active">後端使用者管理{{ breadcrumb[contentNow] }}</li>
+        </ol>
+    </div>
+    <!-- 所在位置 end-->
+    <!-- 內容 -->
+    <div class=" tile">
+        <div class="tabs mt-none">
+            <div v-if="(contentNow==1)&& (PV==1)">
+                @* 主要 *@
+                <ul class="nav nav-tabs nav-justifie">
+                    <li class="active" @@click="content(1)"><a href="#list" data-toggle="tab"><i class="fa fa-list"></i>列表</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade in active clearfix" id="home">
+                        <!-- form -->
+                        <div class="form-horizontal" id="form1" method="post" name="form1">
+                            <div class="row">
+                                <div class="form-group row col-md-3">
+                                    <label class="control-label col-md-3">搜尋</label>
+                                    <div class="col-md-9">
+                                        <input class="form-control" type="text" id="SerchContent" name="SerchContent" placeholder="搜尋" v-model="searchItem">
+                                    </div>
+                                </div>
+                                <div class="form-group row col-md-3">
+                                    <label class="control-label col-md-3">
+                                        搜尋欄位
+                                    </label>
+                                    <div class="col-md-9">
+                                        <select class="form-control" id="SerchKey" name="SerchKey" :value="searchColumn" @@change="searchColumn = $event.target.value">
+                                            <option value="STNo">編號</option>
+                                            <option value="STName">使用者名稱</option>
+                                            <option value="LoginName">使用者帳號</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row col-md-3">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-primary viewimage" @@click="getDataPaged(1, searchItem, searchColumn)">
+                                            <i class="fa fa-search"></i>查詢
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-horizontal row form-inline md" id="tabletop">
+                                <div class="col-sm-6">
+                                    <div class="padl">
+                                        <template v-if="(PD==1)"><input type="checkbox" id="checkAll" @@click="checkAll();">全選</template>
+                                        <button class="btn btn-danger deldata ml1" type="button" @@click="deleteSelected" v-if="(PD==1)"><i class="fa fa-remove"></i>刪除</button>
+                                        <button class="btn btn-success ml1" type="button" @@click="content(2)" v-if="(PA==1)"><i class="fa fa-plus-square-o"></i>新增</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="table rwd-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-1"></th>
+                                        <th class="col-md-2" v-if="(PU==1)">操作</th>
+                                        <th class="col-md-1"><a href="javascript:void(0)" @@click="sortBy('STNo')"><i class="fa fa-fw fa-sort"></i>編號</a></th>
+                                        <th>名稱</th>
+                                        <th><a href="javascript:void(0)" @@click="sortBy('LoginName')"><i class="fa fa-fw fa-sort"></i>帳號</a></th>
+                                        <th><a href="javascript:void(0)" @@click="sortBy('AllPower')"><i class="fa fa-fw fa-sort"></i>所有權限</a></th>
+                                        <th><a href="javascript:void(0)" @@click="sortBy('LoginTime')"><i class="fa fa-fw fa-sort"></i>最後登入</a></th>
+                                        <th><a href="javascript:void(0)" @@click="sortBy('LAmount')"><i class="fa fa-fw fa-sort"></i>登入次數</a></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, index) in RenderingData" :key="index">
+                                        <td data-th="刪除"><input name="del_code" class="del_code" type="checkbox" :value=`${item.STNo}` v-model="selectedItems" v-if="(PD==1)"></td>
+                                        <td data-th="操作" v-if="(PU==1)">
+                                            <a class="btn btn-success" title="編輯" @@click="content(3, item.STNo)">
+                                                <i class="fa fa-edit"></i>編輯
+                                            </a>
+                                            <a class="btn btn-danger ml1" title="密碼" @@click="content(4, item.STNo)">
+                                                <i class="fa fa-edit"></i>密碼
+                                            </a>
+                                        </td>
+                                        <td data-th="編號">{{item.STNo}}</td>
+                                        <td data-th="名稱">{{item.STName}}</td>
+                                        <td data-th="帳號">{{ item.LoginName }}</td>
+                                        <td data-th="所有權限">
+                                            <span v-if="item.AllPower === 1">是</span>
+                                            <span v-if="item.AllPower === 0">否</span>
+                                        </td>
+                                        <td data-th="最後登入">{{formatTime(item.LoginTime)}}</td>
+                                        <td data-th="登入次數">{{item.LAmount}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- form -->
+                        <!-- pagination -->
+                        <ul class="pagination">
+                            <li v-if="pageTotal.CurrentPage > 1"><a href="javascript:void(0)" @@click="goToPage(pageNow - 1)">上一頁</a></li>
+                            <li v-for="page in generatePagination()" :class="{ active: page === pageNow }">
+                                <a href="javascript:void(0)" @@click="goToPage(page)">{{ page }}</a>
+                            </li>
+                            <li v-if="pageTotal.CurrentPage < pageTotal.TotalPages"><a href="javascript:void(0)" @@click="goToPage(pageNow + 1)">下一頁</a></li>
+                            <li class="number">第{{pageNow}}/{{pageTotal.TotalPages}}頁  共{{pageTotal.TotalCount}}筆記錄</li>
+                        </ul>
+                        <!-- pagination -->
+                    </div>
+                </div>
+            </div>
+            <div v-if="(contentNow==2)&& (PA==1)">
+                <div class="tile-body">
+                    <div class="form-horizontal mt2" name="form1" id="form1" method="post" action="Staff_.aspx" enctype="multipart/form-data">
+                        <input type="hidden" name="AVG" value="&amp;">
+                        <input type="hidden" name="flag" value="M">
+                        <input type="hidden" name="No" value="2">
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>使用者名稱</label>
+                            <div class="col-md-3">
+                                <input class="form-control" v-model="addData.STName" type="text" value="TestUser" placeholder="使用者名稱">
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>使用者帳號</label>
+                            <div class="col-md-3">
+                                <input class="form-control" v-model="addData.STName" type="text" value="TestUser" placeholder="使用者名稱">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">連絡電話</label>
+                            <div class="col-md-3">
+                                <input class="form-control" v-model="addData.Tel" type="text" value="" placeholder="連絡電話">
+                            </div>
+                            <label class="control-label col-md-2">Email</label>
+                            <div class="col-md-3">
+                                <input class="form-control" v-model="addData.EMail" type="text" value="" placeholder="EMail">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">所有權限</label>
+                            <div class="col-md-1">
+                                <label>
+                                    <input name="AllPower" id="AllPower" type="checkbox" :value="addData.AllPower" v-model="AllPower">
+                                </label>是
+                            </div>
+                        </div>
+                        <div class="form-group row" id="PowerSet" v-if="(AllPower==false)">
+                            <div class="col-sm-12">
+                                <table class="table table-striped table-hover ">
+                                    <thead><tr><th>功能項目</th><th><input type="checkbox" class="cAll" @@click="selectSamePower('PV')">檢視</th><th><input type="checkbox" class="cAll" value="AddAll">新增</th><th><input type="checkbox" class="cAll" value="DelAll">刪除</th><th><input type="checkbox" class="cAll" value="UpdateAll">修改</th><th><input type="checkbox" class="cAll" value="GrantAll">授權</th><th><input type="checkbox" clas-s="cAll" value="Other1All">特殊1</th><th><input type="checkbox" class="cAll" value="Other2All">特殊2</th><th><input type="checkbox" class="cAll" value="Other2All">特殊2</th></tr></thead>
+                                    <tbody v-for="(item, index) in ManageItem" :key="index">
+                                        <tr>
+                                            <td @@click="abc">{{ getMCNameByMCNo(item.MCNo) }}-{{ item.ItemName }}</td>
+                                            <td>
+                                                <input type="checkbox" :id="'PV_' + item.MINo" class="PowerView"
+                                                       v-if="item.PowerView !== 0" value="1"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'PV') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_PV', $event.target.checked)">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'PA_' + item.MINo" class="PowerAdd"
+                                                       v-if="(item.PowerAdd !== 0)"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'PA') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_PA', $event.target.checked)">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'PD_' + item.MINo" class="PowerDel"
+                                                       v-if="(item.PowerDel !== 0)"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'PD') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_PD', $event.target.checked)">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'PU_' + item.MINo" class="PowerUpdate"
+                                                       v-if="(item.PowerUpdate !== 0)"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'PU') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_PU', $event.target.checked)">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'PG_' + item.MINo" class="PowerGrant"
+                                                       v-if="(item.PowerGrant !== 0)"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'PG') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_PG', $event.target.checked)">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'P1_' + item.MINo" class="Power1"
+                                                       v-if="(item.Power1 !== '')"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'P1') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_P1', $event.target.checked)">
+                                                {{ item.Power1 }}
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'P2_' + item.MINo" class="Power2"
+                                                       v-if="(item.Power2 !== '')"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'P2') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_P2', $event.target.checked)">
+                                                {{ item.Power2 }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tile-footer">
+                        <div class="padl" align="center">
+                            <button class="btn btn-primary" type="button" id="CheckSave" @@click="update"><i class="fa fa-save">儲存</i></button>
+                            <button class="btn btn-warning ml1" type="button" @@click="content(1)"><i class="fa fa-th-list">返回列表</i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="(contentNow==3)&& (PU==1)">
+                @* 編輯 *@
+                <div class="tile-body">
+                    <div class="form-horizontal mt2" name="form1" id="form1" method="post" action="Staff_.aspx" enctype="multipart/form-data">
+                        <input type="hidden" name="AVG" value="&amp;">
+                        <input type="hidden" name="flag" value="M">
+                        <input type="hidden" name="No" value="2">
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>使用者名稱</label>
+                            <div class="col-md-3">
+                                <input class="form-control" v-model="editData[0].STName" type="text" value="TestUser" placeholder="使用者名稱">
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>使用者帳號</label>
+                            <div class="col-md-3">
+                                {{editData[0].LoginName}}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">連絡電話</label>
+                            <div class="col-md-3">
+                                <input class="form-control" v-model="editData[0].Tel" type="text" value="" placeholder="連絡電話">
+                            </div>
+                            <label class="control-label col-md-2">Email</label>
+                            <div class="col-md-3">
+                                <input class="form-control" v-model="editData[0].EMail" type="text" value="" placeholder="EMail">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">所有權限</label>
+                            <div class="col-md-1">
+                                <label>
+                                    <input name="AllPower" id="AllPower" type="checkbox" :value="editData[0].AllPower" v-model="AllPower">
+                                </label>是
+                            </div>
+                        </div>
+                        <div class="form-group row" id="PowerSet" v-if="(AllPower==false)">
+                            <div class="col-sm-12">
+                                <table class="table table-striped table-hover ">
+                                    <thead><tr><th>功能項目</th><th><input type="checkbox" class="cAll" @@click="selectSamePower">檢視</th><th><input type="checkbox" class="cAll" value="AddAll">新增</th><th><input type="checkbox" class="cAll" value="DelAll">刪除</th><th><input type="checkbox" class="cAll" value="UpdateAll">修改</th><th><input type="checkbox" class="cAll" value="GrantAll">授權</th><th><input type="checkbox" clas-s="cAll" value="Other1All">特殊1</th><th><input type="checkbox" class="cAll" value="Other2All">特殊2</th><th><input type="checkbox" class="cAll" value="Other2All">特殊2</th></tr></thead>
+                                    <tbody v-for="(item, index) in ManageItem" :key="index">
+                                        <tr>
+                                            <td @@click="abc">{{ getMCNameByMCNo(item.MCNo) }}-{{ item.ItemName }}</td>
+                                            <td>
+                                                <input type="checkbox" :id="'PV_' + item.MINo" class="PowerView" name="PowerView_1"
+                                                       v-if="item.PowerView !== 0" value="1"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'PV') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_PV', $event.target.checked)">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'PA_' + item.MINo" class="PowerAdd" name="PowerAdd_1"
+                                                       v-if="(item.PowerAdd !== 0)"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'PA') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_PA', $event.target.checked)">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'PD_' + item.MINo" class="PowerDel" name="PowerDel_1"
+                                                       v-if="(item.PowerDel !== 0)"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'PD') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_PD', $event.target.checked)">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'PU_' + item.MINo" class="PowerUpdate" name="PowerUpdate_1"
+                                                       v-if="(item.PowerUpdate !== 0)"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'PU') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_PU', $event.target.checked)">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'PG_' + item.MINo" class="PowerGrant" name="PowerGrant_1"
+                                                       v-if="(item.PowerGrant !== 0)"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'PG') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_PG', $event.target.checked)">
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'P1_' + item.MINo" class="Power1" name="Power1_4"
+                                                       v-if="(item.Power1 !== '')"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'P1') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_P1', $event.target.checked)">
+                                                {{ item.Power1 }}
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" :id="'P2_' + item.MINo" class="Power2" name="Power2_4"
+                                                       v-if="(item.Power2 !== '')"
+                                                       v-bind:checked="getStaffPowerByEpower(item.MINo, 'P2') === 1"
+                                                       @@change="updateSelectedPower(item.MINo + '_P2', $event.target.checked)">
+                                                {{ item.Power2 }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tile-footer">
+                        <div class="padl" align="center">
+                            <button class="btn btn-primary" type="button" id="CheckSave" @@click="update"><i class="fa fa-save">儲存</i></button>
+                            <button class="btn btn-warning ml1" type="button" @@click="content(1)"><i class="fa fa-th-list">返回列表</i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="(contentNow==4)&& (PG==1)">
+                @* 修改密碼 *@
+                <div class="tile-body">
+                    <form class="form-horizontal mt2" name="form1" id="form1" method="post" action="Staff_.aspx" enctype="multipart/form-data">
+                        <input type="hidden" name="AVG" value="&amp;">
+                        <input type="hidden" name="flag" value="ResetPasswd">
+                        <input type="hidden" name="No" value="2">
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>使用者名稱</label>
+                            <div class="col-md-3">
+                                {{editData[0].STName}}
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>使用者帳號</label>
+                            <div class="col-md-3">
+                                {{editData[0].LoginName}}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>使用者密碼</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="LPassword" id="LPassword" type="password" placeholder="使用者密碼" v-model="newPasswd">
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>密碼確認</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="CPassword" id="CPassword" type="password" placeholder="密碼確認" v-model="newPasswd2">
+                            </div>
+                        </div>
+                    </form>
+                    <div class="tile-footer">
+                        <div class="padl" align="center">
+                            <button class="btn btn-primary" type="button" id="CheckSave" @@click="editLoginPasswd(editData[0].STNo, newPasswd)"><i class="fa fa-save">儲存</i></button>
+                            <button class="btn btn-warning ml1" type="button" @@click="content(1)"><i class="fa fa-th-list">返回列表</i></button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-center">管理項目主類別快速排序</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title text-center">
+                        <input type="button" value="往上移動" class="btn btn-default" id="list_up">
+                        <input type="button" value="往下移動" class="btn btn-default" id="list_down">
+                    </div>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="scroll_list">
+                        <ul class="list-group text-left">
+                            <li class="list-group-item order_li" id="order_1" data-no="1" v-for="(item, index) in RenderingData" :key="index">{{item.ItemName}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="order_ok">確認</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+@section Scripts{
+    <script>
+        // 【 System/Staff.cshtml 】
+        const StaffVue = Vue.createApp({
+            data() {
+                return {
+                    // 主要顯示資料存放區 //
+                    RenderingData: null,
+                    // 現在頁面 & 導覽列  //
+                    contentNow: 1,
+                    breadcrumb: {
+                        1: '',
+                        2: '-新增',
+                        3: '-修改',
+                        4: '-修改密碼',
+                    },
+                    //   新增 & 編輯   //
+                    addData: {},
+                    editData: {},
+                    editPower: [],
+                    selectedPower: [], // 新增的陣列
+                    cancelledPower: [],
+                    editMINo: null,
+                    AllPower: false,
+                    STNo: 1,
+                    //  放在  AXIOS 傳遞 //
+                    pageSize: 10, //一頁幾筆資料
+                    pageNow: 1,
+                    Sort: 'ASC',
+                    Column: 'STNo',
+                    /* ------------------ */
+                    pageTotal: null,
+                    selectedItems: [],
+                    /* ------------------ */
+                    ManageItem: null,
+                    SysClassData: null,
+                    StaffPower: null,
+                    /* ------------------ */
+                    PV: 0, PA: 0, PD: 0, PU: 0, PG: 0, P1: 0, P2: 0,
+                    newPasswd: '',
+                    newPasswd2: '',
+                };
+            },
+            mounted() {
+                let _this = this;
+                _this.getDataPaged(_this.pageNow);
+                _this.getSysClassData();
+                _this.linkGetPage();
+                _this.getStaffPower();
+                _this.getPermissionValue('PV');
+                _this.getPermissionValue('PA');
+                _this.getPermissionValue('PD');
+                _this.getPermissionValue('PU');
+                _this.getPermissionValue('PG');
+                _this.getPermissionValue('P1');
+                _this.getPermissionValue('P2');
+            },
+            methods: {
+                // << 搜尋 & 資料渲染(分頁) >>
+                getDataPaged(pageNow, searchItem = '', searchColumn = 'STNo') {
+                    // 中文、英文以外空格、特殊符號都刪除
+                    searchItem = searchItem.replace(/[^\w\s\u4e00-\u9fa5]/gi, '').replace(/\s+/g, ' ').trim();
+
+                    let apiUrl = `/api/SystemMember/GetPaged?`;
+                    if (searchItem === '') {
+                        apiUrl += `page=${pageNow}&pageSize=${this.pageSize}&selectFrom=Staff&orderBy=${this.Column}%20${this.Sort}`;
+                    } else {
+                        apiUrl += `search=${searchItem}&column=${searchColumn}&page=${pageNow}&pageSize=${this.pageSize}&selectFrom=Staff&orderBy=${this.Column}%20${this.Sort}`;
+                    }
+                    axios.get(apiUrl, {
+                        headers: {
+                            Authorization: `Bearer ${token}` // 將 Token 放入標頭
+                        }
+                    })
+                        .then(response => {
+                            this.pageTotal = response.data.Paging;
+                            this.RenderingData = response.data.Data;
+                            this.searchItem = searchItem;
+                            this.searchColumn = searchColumn;
+                            this.pageNow = pageNow;
+                        })
+                        .catch(() => {
+                            console.clear(); // Just for C
+                        });
+                },
+                // < 獲得控制器資料 >
+                getSysClassData() {
+                    let _this = this;
+                    axios.get(`/api/SystemClass/GetManageClass/`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }).then(
+                        response => {
+                            _this.SysClassData = response.data;
+                        }
+                    );
+                },
+                // < 由 MCNo 獲取 Controller 名稱 >
+                getMCNameByMCNo(MCNo) {
+                    let foundMC = this.SysClassData.find(item => item.MCNo === MCNo);
+                    if (foundMC) {
+                        return foundMC.MCName;
+                    } else {
+                        return null;
+                    }
+                },
+                getManageItem() {
+                    let _this = this;
+                    axios.get(`/api/SystemItem/GetManageItem`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }).then(
+                        response => {
+                            _this.ManageItem = response.data.filter(item => item.MCNo >= 1).sort((a, b) => a.MCNo - b.MCNo);
+                        }
+                    );
+                },
+                getStaffPower() {
+                    let _this = this;
+                    axios.get(`/api/SystemMember/GetStaffPower/${this.STNo}`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }).then(
+                        response => {
+                            _this.StaffPower = response.data;
+                        }
+                    );
+                },
+                // << 獲得權限設置 >>
+                getStaffPowerByEpower(MINo, Epower = '') {
+                    let foundMC = this.StaffPower.find(item => item.MINo === MINo);
+                    if (foundMC) {
+                        return foundMC[Epower];
+                    } else {
+                        return null;
+                    }
+                },
+                // << 切換分頁 >>
+                goToPage(page) {
+                    if (this.searchItem === '') {
+                        this.getDataPaged(page);
+                    } else {
+                        this.getDataPaged(page, this.searchItem, this.searchColumn);
+                    }
+                    // 切換分頁時取消全選
+                    let checkAll = document.getElementById("checkAll");
+                    checkAll.checked = false;
+                    this.checkAll(); // 調用checkAll方法，將複選框狀態更新到selectedItems陣列。
+                },
+                // --------------------------------------------------------------------------------
+                // [ 資料排序 ]
+                sortBy(column) {
+                    let _this = this;
+                    if (_this.Sort === 'DESC') {
+                        _this.Sort = 'ASC';
+                    } else {
+                        _this.Sort = 'DESC';
+                    }
+                    _this.Column = column;
+                    // 以下是在同時確認目前狀態，是搜尋模式還是全部列表
+                    if (this.searchItem === '') {
+                        _this.getDataPaged(_this.pageNow);
+                    } else {
+                        _this.searchItem = _this.searchItem.replace(/[^\w\s\u4e00-\u9fa5]/gi, '').replace(/\s+/g, ' ').trim();
+                        _this.getDataPaged(1, _this.searchItem, _this.searchColumn);
+                    }
+                },
+                // [ 時間格式轉換 ]
+                formatTime(timeStr) {
+                    const date = new Date(timeStr);
+                    if (isNaN(date.getTime())) {
+                        // 時間格式不正確，返回空字串
+                        return '';
+                    }
+                    const year = date.getFullYear();
+                    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+                    const day = ('0' + date.getDate()).slice(-2);
+                    const hours = ('0' + date.getHours()).slice(-2);
+                    const minutes = ('0' + date.getMinutes()).slice(-2);
+                    const seconds = ('0' + date.getSeconds()).slice(-2);
+                    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                },
+                // [ 獲取連結的小物 (測試) ]
+                linkGetPage: async function () {
+                    let _this = this;
+                    var getUrlString = location.href;
+                    var url = new URL(getUrlString);
+                    //console.log(url.searchParams.get('page'));
+                    pageNow = url.searchParams.get('page');
+                    searchItem = url.searchParams.get('search');
+                    if (pageNow === null) {
+                        pageNow = 1;
+                    }
+                    _this.getDataPaged(pageNow);
+                },
+                // [ 切換頁面Content內容 (C,R,U,D) & 獲取目前編輯資料]
+                content(Num, STNo) {
+                    let _this = this;
+                    _this.contentNow = Num;
+                    // ↓取得目前編輯資料
+                    if (STNo != null) {
+                        axios.get(`/api/SystemMember/GetManageMember_BySTNo/${STNo}`, {
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            }
+                        }).then(
+                            response => {
+                                let _this = this;
+                                _this.STNo = STNo;
+                                _this.editData = response.data;
+                                _this.getManageItem();
+                                _this.getStaffPower()
+                                if (_this.editData[0].AllPower == 1) {
+                                    this.AllPower = true;
+                                } else {
+                                    this.AllPower = false;
+                                }
+                            }
+                        ).catch(
+                            error => {
+                                console.log(error);
+                            }
+                        );
+                    }
+                },
+                // [ 頁碼產生 ]
+                generatePagination() {
+                    let _this = this;
+                    let pages = [];
+                    let startPage, endPage;
+                    let totalPages = this.pageTotal.TotalPages;
+                    _this.pageNow = this.pageTotal.CurrentPage;
+                    if (totalPages <= 5) {
+                        startPage = 1;
+                        endPage = totalPages;
+                    } else {
+                        if (_this.pageNow <= 3) {
+                            startPage = 1;
+                            endPage = 5;
+                        } else if (_this.pageNow + 1 >= totalPages) {
+                            startPage = totalPages - 4;
+                            endPage = totalPages;
+                        } else {
+                            startPage = _this.pageNow - 2;
+                            endPage = _this.pageNow + 2;
+                        }
+                    }
+                    for (let i = startPage; i <= endPage; i++) {
+                        pages.push(i);
+                    }
+                    return pages;
+                },
+                // ----------------------------------------------------
+                // 【 新增 】
+                create() {
+                    let _this = this;
+                    var request = {};
+                    request.MCNo = _this.addData.mCNo;
+                    request.ItemName = _this.addData.itemName;
+                    request.MIAction = _this.addData.mIAction;
+                    request.PowerView = _this.addData.powerView;
+                    request.PowerAdd = _this.addData.powerAdd;
+                    request.PowerDel = _this.addData.powerDel;
+                    request.PowerUpdate = _this.addData.powerUpdate;
+                    request.PowerGrant = _this.addData.powerGrant;
+                    request.Power1 = _this.addData.power1;
+                    request.Power2 = _this.addData.power2;
+                    request.Order = _this.addData.order;
+                    request.State = 0;
+                    request.MSNo = 1;
+
+                    axios.post(`/api/SystemItem/AddManageItem`, request, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    })
+                        .then(response => {
+                            let MCXtrol = _this.getMCXtrolByMCNo(_this.addData.mCNo);
+                            // 去產生Cshtml
+                            _this.CreateCshtmlFile(MCXtrol, _this.addData.mIAction);
+                            // 在Controller產生Action
+                            _this.AddViewAction(MCXtrol, _this.addData.mIAction);
+                            alert("新增成功");
+                            window.location = `/Sys/System/Item`;
+                        })
+                        .catch(error => {
+                            alert(error);
+                        });
+                },
+                // ----------------------------------------------------
+                // 【 修改 】 
+                editLoginPasswd(STNo, pass) {
+                    if ((pass == this.newPasswd2) & (pass != '')) {
+                        axios.post(`/api/SystemMember/EditLoginPasswd/${STNo}/${pass}`, {
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            }
+                        })
+                            .then(() => {
+                                alert("修改成功");
+                                window.location = `/Sys/System/Staff`;
+                            })
+                            .catch(error => {
+                                //    console.log(error);
+                            });
+                    } else if (pass != this.newPasswd2) {
+                        alert("請確定密碼一致");
+                    } else {
+                        alert("請輸入新密碼");
+                    }
+                },
+                update() {
+                    for (let i = 0; i < this.selectedPower.length; i++) {
+                        const { MINo, ...powers } = this.selectedPower[i];
+                        const request = {};
+                        if (powers.PV) {
+                            request.PV = 1;
+                        }
+                        if (powers.PA) {
+                            request.PA = 1;
+                        }
+                        if (powers.PD) {
+                            request.PD = 1;
+                        }
+                        if (powers.PU) {
+                            request.PU = 1;
+                        }
+
+                        if (powers.PG) {
+                            request.PG = 1;
+                        }
+
+                        if (powers.P1) {
+                            request.P1 = 1;
+                        }
+                        if (powers.P2) {
+                            request.P2 = 1;
+                        }
+
+                        axios.get(`/api/SystemMember/GetOrUpdateStaffPower/${this.STNo}/${MINo}`,
+                            {
+                                params: request
+                            },
+                            {
+                                headers:
+                                {
+                                    "Authorization": `Bearer ${token}`
+                                }
+                            }
+                        );
+                    }
+
+                    for (let i = 0; i < this.cancelledPower.length; i++) {
+                        const { MINo, ...powers } = this.cancelledPower[i];
+                        const request = {};
+                        if (powers.PV !== undefined) {
+                            request.PV = 0;
+                        }
+                        if (powers.PA !== undefined) {
+                            request.PA = 0;
+                        }
+                        if (powers.PD !== undefined) {
+                            request.PD = 0;
+                        }
+                        if (powers.PU !== undefined) {
+                            request.PU = 0;
+                        }
+
+                        if (powers.PG !== undefined) {
+                            request.PG = 0;
+                        }
+
+                        if (powers.P1 !== undefined) {
+                            request.P1 = 0;
+                        }
+                        if (powers.P2 !== undefined) {
+                            request.P2 = 0;
+                        }
+
+                        axios.get(`/api/SystemMember/GetOrUpdateStaffPower/${this.STNo}/${MINo}`,
+                            {
+                                params: request
+                            },
+
+                            {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`
+                                }
+                            });
+                    }
+
+                    alert("修改成功");
+                    window.location = `/Sys/System/Staff`;
+                },
+                // 獲得checkbox勾選物
+                updateSelectedPower(key, checked) {
+                    const [MINo, Epower] = key.split('_');
+
+                    // 獲取具有相同 MINo 的複選框的狀態
+                    const powerState = {};
+                    const checkboxes = document.querySelectorAll(`input[name^="${MINo}_"]`);
+                    checkboxes.forEach(checkbox => {
+                        const [_, power] = checkbox.name.split('_');
+                        powerState[power] = checkbox.checked ? 1 : 0;
+                    });
+
+                    if (checked) {
+                        // 添加到 selectedPower 數組
+                        const selectedIndex = this.selectedPower.findIndex(item => item.MINo === MINo);
+                        if (selectedIndex > -1) {
+                            this.selectedPower[selectedIndex][Epower] = 1;
+                        } else {
+                            this.selectedPower.push({
+                                MINo: MINo,
+                                [Epower]: 1,
+                                ...powerState
+                            });
+                        }
+
+                        // 如果同時存在於 cancelledPower 數組中，則移除
+                        const cancelledIndex = this.cancelledPower.findIndex(item => item.MINo === MINo);
+                        if (cancelledIndex > -1) {
+                            delete this.cancelledPower[cancelledIndex][Epower];
+                            if (Object.keys(this.cancelledPower[cancelledIndex]).length === 1) {
+                                this.cancelledPower.splice(cancelledIndex, 1);
+                            }
+                        }
+                    } else {
+                        // 移除從 selectedPower 數組中
+                        const selectedIndex = this.selectedPower.findIndex(item => item.MINo === MINo);
+                        if (selectedIndex > -1) {
+                            delete this.selectedPower[selectedIndex][Epower];
+                            if (Object.keys(this.selectedPower[selectedIndex]).length === 1) {
+                                this.selectedPower.splice(selectedIndex, 1);
+                            }
+                        }
+
+                        // 添加到 cancelledPower 數組
+                        const cancelledIndex = this.cancelledPower.findIndex(item => item.MINo === MINo);
+                        if (cancelledIndex > -1) {
+                            this.cancelledPower[cancelledIndex][Epower] = 0;
+                        } else {
+                            this.cancelledPower.push({
+                                MINo: MINo,
+                                [Epower]: 0,
+                                ...powerState
+                            });
+                        }
+                    }
+                },
+                // ----------------------------------------------------
+                // 【 刪除 】
+                deleteSelected() {
+                    if (this.selectAll) {
+                        this.checkAll();
+                    }
+                    // 取得被勾選的項目
+                    const selectedItems = this.selectedItems;
+
+                    // 如果沒有項目被勾選，結束函數
+                    if (selectedItems.length === 0) {
+                        alert('您沒有選擇要刪除的資料')
+                        return;
+                    }
+
+                    // 將勾選的項目編號做成一個字串
+                    const checkedParams = selectedItems.map(item => `STNo=${item}`).join('&');
+
+                    // 呼叫 deleteRenderingData 方法
+                    this.deleteData(checkedParams)
+                        .then(response => {
+                            // 清空 selectedItems 陣列
+                            this.selectedItems = [];
+                        })
+                        .catch(error => {
+                            // 刪除失敗，顯示錯誤訊息
+                            console.error(error);
+                        });
+                },
+                /* 批次刪除資料 */
+                deleteData(checkedParams) {
+                    if (confirm("確定要刪除所選擇的資料嗎？")) {
+                        axios.delete(`/api/SystemMember/DeleteStaffBatch/batch?${checkedParams}`, {
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            }
+                        })
+                            .then(response => {
+                                this.getDataPaged(this.pageNow);
+                                showAlert('刪除成功！', 180);
+                            })
+                            .catch(error => {
+                                console.log(error);
+                            });
+                    }
+                },
+                /* 全選 */
+                checkAll() {
+                    let delCodes = document.getElementsByName("del_code");
+                    let checkAll = document.getElementById("checkAll");
+                    for (let i = 0; i < delCodes.length; i++) {
+                        delCodes[i].checked = checkAll.checked;
+                    }
+                    // 更新選取項目的陣列
+                    this.selectedItems = checkAll.checked ? this.RenderingData.map(item => item.STNo) : [];
+                },
+                // ----------------------------------------------------
+                // 【 權限 】
+                getPermissionValue(permiss, minNo = 3) {
+                    axios.get(`/api/AccountLogin/GetUserInfo`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    })
+                        .then(response => {
+                            const STNo = response.data.STNo;
+                            axios.get(`/api/AccountLogin/GetStaffPermissions/${STNo}`, {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`
+                                }
+                            })
+                                .then(response => {
+                                    const permissions = response.data;
+                                    const permission = permissions.find(p => p.MINo === parseInt(minNo, 10));
+                                    if (permission) {
+                                        this.permissionValue = permission
+                                        this.$data[permiss] = this.permissionValue[permiss];
+                                    } else {
+                                        this.permissionValue = null;
+                                        this.$data[permiss] = this.permissionValue;
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                });
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                },
+                getSTNameByToken() {
+                    axios.get(`/api/AccountLogin/GetUserInfo`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    })
+                        .then(response => {
+                            const STNo = response.data.STNo;
+                            axios.get(`/api/AccountLogin/GetSTNameBySTNo/${STNo}`, {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`
+                                }
+                            })
+                                .then(response => {
+                                    this.STName = response.data;
+                                })
+                                .catch(error => {
+                                    this.STName = 'Unknown'
+                                });
+                        })
+                        .catch(error => {
+                            this.STName = 'Unknown#'
+                        });
+                },
+            },
+        }).mount("#StaffVue");
+    </script>
+}

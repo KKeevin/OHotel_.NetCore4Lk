@@ -1,0 +1,729 @@
+﻿@{
+    //ViewData["Title"] = "";
+}
+
+<main class="app-content" id="ItemVue">
+    <!-- 所在位置 -->
+    <div class="app-title">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">系統管理&nbsp;</li>
+            <li class="breadcrumb-item active">管理項目設定{{ breadcrumb[contentNow] }}</li>
+        </ol>
+    </div>
+    <!-- 所在位置 end-->
+    <!-- 內容 -->
+    <div class=" tile">
+        <div class="tabs mt-none">
+            <div v-if="(contentNow==1)&& (PV==1)">
+                @* 主要 *@
+                <ul class="nav nav-tabs nav-justifie">
+                    <li class="active" @@click="content(1)"><a href="#list" data-toggle="tab"><i class="fa fa-list"></i>列表</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade in active clearfix" id="home">
+                        <!-- form -->
+                        <div class="form-horizontal" id="form1" method="post" name="form1">
+                            <div class="row">
+                                <div class="form-group row col-md-3">
+                                    <label class="control-label col-md-3">搜尋</label>
+                                    <div class="col-md-9">
+                                        <input class="form-control" type="text" id="SerchContent" name="SerchContent" placeholder="搜尋" v-model="searchItem">
+                                    </div>
+                                </div>
+                                <div class="form-group row col-md-3">
+                                    <label class="control-label col-md-3">
+                                        搜尋欄位
+                                    </label>
+                                    <div class="col-md-9">
+                                        <select class="form-control" id="SerchKey" name="SerchKey" :value="searchColumn" @@change="searchColumn = $event.target.value">
+                                            <option value="ItemName">項目名稱</option>
+                                            <option value="ManageItem.MCNo">主類別名稱</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row col-md-3">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-primary viewimage" @@click="getDataPaged(1, searchItem, searchColumn)">
+                                            <i class="fa fa-search"></i>查詢
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-horizontal row form-inline md" id="tabletop">
+                                <div class="col-sm-6">
+                                    <div class="padl">
+                                        <template v-if="(PD==1)"><input type="checkbox" id="checkAll" @@click="checkAll();">全選</template>
+                                        <button class="btn btn-danger deldata ml1" type="button" @@click="deleteSelected" v-if="(PD==1)"><i class="fa fa-remove"></i>刪除</button>
+                                        <button class="btn btn-success ml1" type="button" @@click="content(2)" v-if="(PA==1)"><i class="fa fa-plus-square-o"></i>新增</button>
+                                        <button type="button" class="btn btn-info ml1" id="FastOrder" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-reorder"></i>快速排序</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="table rwd-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-1"></th>
+                                        <th class="col-md-1" v-if="(PU==1)">操作</th>
+                                        <th class="col-md-1"><a href="javascript:void(0)" @@click="sortBy('MINo')"><i class="fa fa-fw fa-sort"></i>編號</a></th>
+                                        <th class="col-md-1"><a href="javascript:void(0)" @@click="sortBy('MCNo')"><i class="fa fa-fw fa-sort"></i>主類別</a></th>
+                                        <th>項目名稱</th>
+                                        <th>連結網址</th>
+                                        <th>
+                                            <a href="javascript:void(0)" @@click="sortBy('%5BOrder%5D')">
+                                                <i class="fa fa-fw fa-sort"></i>
+                                                排序
+                                            </a>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, index) in RenderingData" :key="index">
+                                        <td data-th="刪除"><input name="del_code" class="del_code" type="checkbox" :value=`${item.MINo}` v-model="selectedItems" v-if="(PD==1)"></td>
+                                        <td data-th="操作" v-if="(PU==1)"><a class="btn btn-success" title="編輯" @@click="content(3, item.MINo)"><i class="fa fa-edit"></i>編輯</a></td>
+                                        <td data-th="編號">{{item.MINo}}</td>
+                                        <td data-th="主類別">{{ item.MCName }}</td>
+                                        <td data-th="項目名稱">{{item.ItemName}}</td>
+                                        <td data-th="連結網址">{{item.MIAction}}</td>
+                                        <td data-th="排序">{{item.Order}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- form -->
+                        <!-- pagination -->
+                        <ul class="pagination" v-if="pageTotal && pageTotal.CurrentPage !== undefined">
+                            <li v-if="pageTotal.CurrentPage > 1"><a href="javascript:void(0)" @@click="goToPage(pageNow - 1)">上一頁</a></li>
+                            <li v-for="page in generatePagination()" :class="{ active: page === pageNow }">
+                                <a href="javascript:void(0)" @@click="goToPage(page)">{{ page }}</a>
+                            </li>
+                            <li v-if="pageTotal.CurrentPage < pageTotal.TotalPages"><a href="javascript:void(0)" @@click="goToPage(pageNow + 1)">下一頁</a></li>
+                            <li class="number">第{{pageNow}}/{{pageTotal.TotalPages}}頁  共{{pageTotal.TotalCount}}筆記錄</li>
+                        </ul>
+                        <!-- pagination -->
+                    </div>
+                </div>
+            </div>
+            <div v-if="(contentNow==2)&& (PA==1)">
+                @* 新增 *@
+                <div class="tile-body">
+                    <form class="form-horizontal mt2" name="form1" id="form1" method="post">
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>選擇主類別</label>
+                            <div class="col-md-3">
+                                <select class="form-control" v-model="addData.mCNo">
+                                    <option value="0" disabled>--請選擇--</option>
+                                    <option :value="item.MCNo" v-for="item in SysClassData">{{item.MCName}}</option>
+                                </select>
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>項目名稱</label>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" placeholder="項目名稱" v-model="addData.itemName">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>動作路徑(英文)</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="text" placeholder="請輸入英文" v-model="addData.mIAction">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>[檢視]權限</label>
+                            <div class="col-md-3">
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="F_I_PowerView" class="Status_click F_I_PowerView" v-model="addData.powerView">無
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="F_I_PowerView" class="Status_click F_I_PowerView" v-model="addData.powerView">有
+                                </label>
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>[新增]權限</label>
+                            <div class="col-md-3">
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="F_I_PowerAdd" class="Status_click F_I_PowerAdd" v-model="addData.powerAdd">無
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="F_I_PowerAdd" class="Status_click F_I_PowerAdd" v-model="addData.powerAdd">有
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>[刪除]權限</label>
+                            <div class="col-md-3">
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="F_I_PowerDel" class="Status_click F_I_PowerDel" v-model="addData.powerDel">無
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="F_I_PowerDel" class="Status_click F_I_PowerDel" v-model="addData.powerDel">有
+                                </label>
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red"></span>[修改]權限</label>
+                            <div class="col-md-3">
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="F_I_PowerUpdate" class="Status_click F_I_PowerUpdate" v-model="addData.powerUpdate">無
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="F_I_PowerUpdate" class="Status_click F_I_PowerUpdate" v-model="addData.powerUpdate">有
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>[授權]權限</label>
+                            <div class="col-md-3">
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="F_I_PowerGrant" class="Status_click F_I_PowerGrant" v-model="addData.powerGrant">無
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="F_I_PowerGrant" class="Status_click F_I_PowerGrant" v-model="addData.powerGrant">有
+                                </label>
+                            </div>
+                            <label class="control-label col-md-2">[特殊]權限1</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_Power1" id="F_S_NH_Power1" type="text" placeholder="[其他]權限1" v-model="addData.power1">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">[特殊]權限2</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_Power2" id="F_S_NH_Power2" type="text" placeholder="[其他]權限2" v-model="addData.power2">
+                            </div>
+                            <label class="control-label col-md-2">排序</label>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="排序" value="0" v-model="addData.order">
+                                    <span class="input-group-addon">數值越小越前面</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="tile-footer">
+                        <div class="padl" align="center">
+                            <button class="btn btn-primary" type="button" id="CheckSave" @@click="create"><i class="fa fa-save">儲存</i></button>
+                            <button class="btn btn-warning ml1" type="button" @@click="content(1)"><i class="fa fa-th-list">返回列表</i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="(contentNow==3)&& (PU==1)">
+                @* 編輯 *@
+                <div class="tile-body">
+                    <form class="form-horizontal mt2" name="form1" id="form1" method="post">
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>選擇主類別</label>
+                            <div class="col-md-3">
+                                <select class="form-control" v-model="editData[0].MCNo">
+                                    <option :value="item.MCNo" v-for="item in SysClassData">{{item.MCName}}</option>
+                                </select>
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>項目名稱</label>
+                            <div class="col-md-3">
+                                <input class="form-control" type="text" placeholder="項目名稱" v-model="editData[0].ItemName">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>動作路徑(英文)</label>
+                            <div class="col-md-8">
+                                <input class="form-control" type="text" placeholder="請輸入英文" v-model="editData[0].MIAction">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>[檢視]權限</label>
+                            <div class="col-md-3">
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="F_I_PowerView" class="Status_click F_I_PowerView" v-model="editData[0].PowerView">無
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="F_I_PowerView" class="Status_click F_I_PowerView" v-model="editData[0].PowerView">有
+                                </label>
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>[新增]權限</label>
+                            <div class="col-md-3">
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="F_I_PowerAdd" class="Status_click F_I_PowerAdd" v-model="editData[0].PowerAdd">無
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="F_I_PowerAdd" class="Status_click F_I_PowerAdd" v-model="editData[0].PowerAdd">有
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red"></span>[刪除]權限</label>
+                            <div class="col-md-3">
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="F_I_PowerDel" class="Status_click F_I_PowerDel" v-model="editData[0].PowerDel">無
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="F_I_PowerDel" class="Status_click F_I_PowerDel" v-model="editData[0].PowerDel">有
+                                </label>
+                            </div>
+                            <label class="control-label col-md-2"><span class="fc-red"></span>[修改]權限</label>
+                            <div class="col-md-3">
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="F_I_PowerUpdate" class="Status_click F_I_PowerUpdate" v-model="editData[0].PowerUpdate">無
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="F_I_PowerUpdate" class="Status_click F_I_PowerUpdate" v-model="editData[0].PowerUpdate">有
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2"><span class="fc-red">*</span>[授權]權限</label>
+                            <div class="col-md-3">
+                                <label class="radio-inline">
+                                    <input type="radio" value="0" name="F_I_PowerGrant" class="Status_click F_I_PowerGrant" v-model="editData[0].PowerGrant">無
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="1" name="F_I_PowerGrant" class="Status_click F_I_PowerGrant" v-model="editData[0].PowerGrant">有
+                                </label>
+                            </div>
+                            <label class="control-label col-md-2">[特殊]權限1</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_Power1" id="F_S_NH_Power1" type="text" placeholder="[其他]權限1" v-model="editData[0].Power1">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-2">[特殊]權限2</label>
+                            <div class="col-md-3">
+                                <input class="form-control" name="F_S_NH_Power2" id="F_S_NH_Power2" type="text" placeholder="[其他]權限2" v-model="editData[0].Power2">
+                            </div>
+                            <label class="control-label col-md-2">排序</label>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="排序" value="0" v-model="editData[0].Order">
+                                    <span class="input-group-addon">數值越小越前面</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="tile-footer">
+                        <div class="padl" align="center">
+                            <button class="btn btn-primary" type="button" id="CheckSave" @@click="update"><i class="fa fa-save">儲存</i></button>
+                            <button class="btn btn-warning ml1" type="button" @@click="content(1)"><i class="fa fa-th-list">返回列表</i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-center">管理項目主類別快速排序</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div class="modal-title text-center">
+                        <input type="button" value="往上移動" class="btn btn-default" id="list_up">
+                        <input type="button" value="往下移動" class="btn btn-default" id="list_down">
+                    </div>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="scroll_list">
+                        <ul class="list-group text-left">
+                            <li class="list-group-item order_li" id="order_1" data-no="1" v-for="(item, index) in RenderingData" :key="index">{{item.ItemName}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="order_ok">確認</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+@section Scripts{
+    <script>
+        const ItemVue = Vue.createApp({
+            data() {
+                return {
+                    // 主要顯示資料存放區 //
+                    RenderingData: null,
+                    // 現在頁面 & 導覽列  //
+                    contentNow: 1,
+                    breadcrumb: {
+                        1: '',
+                        2: '-新增',
+                        3: '-修改',
+                    },
+                    //   新增 & 編輯   //
+                    addData: {},
+                    editData: {},
+                    editMINo: null,
+                    //  放在  AXIOS 傳遞 //
+                    pageSize: 10, //一頁幾筆資料
+                    pageNow: 1,
+                    Sort: 'ASC',
+                    Column: '%5BOrder%5D',
+                    /* ------------------ */
+                    pageTotal: null,
+                    selectedItems: [],
+                    SysClassData: null, //為了下拉選單
+                    /* ------------------ */
+                    /* ------------------ */
+                    PV: 0, PA: 0, PD: 0, PU: 0, PG: 0, P1: 0, P2: 0, //預設權限值
+                };
+            },
+            created() {
+                // 設置預設值: 新增
+                this.addData = {
+                    mCNo: 0,
+                    powerView: 0,
+                    powerAdd: 0,
+                    powerDel: 0,
+                    powerUpdate: 0,
+                    powerGrant: 0,
+                    power1: '',
+                    power2: '',
+                    order: '0'
+                };
+            },
+            mounted() {
+                let _this = this;
+                //_this.linkGetPage();
+                _this.getPermissionValue('PV');
+                _this.getPermissionValue('PA');
+                _this.getPermissionValue('PD');
+                _this.getPermissionValue('PU');
+                _this.getPermissionValue('PG');
+                _this.getPermissionValue('P1');
+                _this.getPermissionValue('P2');
+                _this.getSysClassData();
+            },
+            methods: {
+                // << 獲得登入會員權限 >>
+                getPermissionValue(permiss, minNo = '2') {
+                    const token = localStorage.getItem('Token');
+                    axios.get(`/api/AccountLogin/GetUserInfo`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    })
+                        .then(response => {
+                            const STNo = response.data.STNo;
+                            axios.get(`/api/AccountLogin/GetStaffPermissions/${STNo}`, {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`
+                                }
+                            })
+                                .then(response => {
+                                    const permissions = response.data;
+                                    const permission = permissions.find(p => p.MINo === parseInt(minNo, 10));
+                                    if (permission) {
+                                        this.permissionValue = permission
+                                        this.$data[permiss] = this.permissionValue[permiss];
+
+                                        if (this.PV == 1) { // 判斷是否有檢視權限 -> 渲染頁面
+                                            this.getDataPaged(this.pageNow);
+                                        }
+                                    } else {
+                                        this.permissionValue = null;
+                                        this.$data[permiss] = this.permissionValue;
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                });
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                },                
+                // ----------------------------------------------------
+                // << 搜尋 & 資料渲染(分頁) >>
+                getDataPaged(pageNow, searchItem = '', searchColumn = 'ItemName') {
+                    // 中文、英文以外空格、特殊符號都刪除
+                    searchItem = searchItem.replace(/[^\w\s\u4e00-\u9fa5]/gi, '').replace(/\s+/g, ' ').trim();
+
+                    let apiUrl = `/api/SystemItem/GetPaged?`;
+                    if (searchItem === '') {
+                        apiUrl += `page=${pageNow}&pageSize=${this.pageSize}&selectFrom=ManageItem&orderBy=${this.Column}%20${this.Sort}`;
+                    } else {
+                        apiUrl += `search=${searchItem}&column=${searchColumn}&page=${pageNow}&pageSize=${this.pageSize}&selectFrom=ManageItem&orderBy=${this.Column}%20${this.Sort}`;
+                    }
+                    axios.get(apiUrl, {
+                        headers: {
+                            Authorization: `Bearer ${token}` // 將 Token 放入標頭
+                        }
+                    })
+                        .then(response => {
+                            this.pageTotal = response.data.Paging;
+                            this.RenderingData = response.data.Data;
+                            this.searchItem = searchItem;
+                            this.searchColumn = searchColumn;
+                            this.pageNow = pageNow;
+                        })
+                        .catch(() => {
+                            console.clear(); // Just for C
+                        });
+                },
+                // << 切換分頁 >>
+                goToPage(page) {
+                    if (this.searchItem === '') {
+                        this.getDataPaged(page);
+                    } else {
+                        this.getDataPaged(page, this.searchItem, this.searchColumn);
+                    }
+                    // 切換分頁時取消全選
+                    let checkAll = document.getElementById("checkAll");
+                    checkAll.checked = false;
+                    this.checkAll(); // 調用checkAll方法，將複選框狀態更新到selectedItems陣列。
+                },
+                // < 獲得控制器資料 >
+                getSysClassData() {
+                    let _this = this;
+                    axios.get(`/api/SystemItem/GetManageClass/`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }).then(
+                        response => {
+                            _this.SysClassData = response.data;
+                        }
+                    );
+                },
+                // --------------------------- 新刪修 資料夾/檔案 ----------------------------------
+                //// < 由 MCNo 獲取 Controller 名稱 >
+                //getMCXtrolByMCNo(MCNo) {
+                //    let foundMC = this.SysClassData.find(item => item.MCNo === MCNo);
+                //    if (foundMC) {
+                //        return foundMC.MCXtrol;
+                //    } else {
+                //        return null;
+                //    }
+                //},
+                //// [ 至 Views 裡{folderName}創建{fileName).cshtml文件 ]
+                //CreateCshtmlFile(folderName, fileName) {
+                //    axios.post(`/api/Tools/CreateCshtmlFile/${folderName}/${fileName}`)
+                //},
+                //// [ 至`{folderName}Controller.cs`裡面增加新的{fileName} View Action ]
+                //AddViewAction(folderName, fileName) {
+                //    axios.post(`/api/Tools/AddViewAction/${folderName}/${fileName}`)
+                //},
+                // --------------------------------------------------------------------------------
+                // [ 資料排序 ]
+                sortBy(column) {
+                    let _this = this;
+                    if (_this.Sort === 'DESC') {
+                        _this.Sort = 'ASC';
+                    } else {
+                        _this.Sort = 'DESC';
+                    }
+                    _this.Column = column;
+                    //console.log(_this.Sort);
+                    // 以下是在同時確認目前狀態，是搜尋模式還是全部列表
+                    if (this.searchItem === '') {
+                        _this.getDataPaged(_this.pageNow);
+                    } else {
+                        _this.searchItem = _this.searchItem.replace(/[^\w\s\u4e00-\u9fa5]/gi, '').replace(/\s+/g, ' ').trim();
+                        _this.getDataPaged(1, _this.searchItem, _this.searchColumn);
+                    }
+                },
+                // [ 時間格式轉換 ]
+                formatTime(timeStr) {
+                    const date = new Date(timeStr);
+                    if (isNaN(date.getTime())) {
+                        // 時間格式不正確，返回空字串
+                        return '';
+                    }
+                    const year = date.getFullYear();
+                    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+                    const day = ('0' + date.getDate()).slice(-2);
+                    const hours = ('0' + date.getHours()).slice(-2);
+                    const minutes = ('0' + date.getMinutes()).slice(-2);
+                    const seconds = ('0' + date.getSeconds()).slice(-2);
+                    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                },
+                // [ 獲取連結的小物 (測試) ]
+                linkGetPage: async function () {
+                    let _this = this;
+                    var getUrlString = location.href;
+                    var url = new URL(getUrlString);
+                    //console.log(url.searchParams.get('page'));
+                    pageNow = url.searchParams.get('page');
+                    searchItem = url.searchParams.get('search');
+                    if (pageNow === null) {
+                        pageNow = 1;
+                    }
+                    _this.getDataPaged(pageNow);
+                },
+                // [ 切換頁面Content內容 (C,R,U,D) & 獲取目前編輯資料]
+                content(Num, MINo) {
+                    let _this = this;
+                    _this.contentNow = Num;
+                    // ↓取得目前編輯資料
+                    if (MINo != null) {
+                        axios.get(`/api/SystemItem/GetManageItem_ByMINo/${MINo}`, {
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            }
+                        }).then(
+                            response => {
+                                let _this = this;
+                                _this.editMINo = MINo;
+                                _this.editData = response.data;
+                            }
+                        ).catch(
+                            error => {
+                                console.log(error);
+                            }
+                        );
+                    }
+                },
+                // [ 頁碼產生 ]
+                generatePagination() {
+                    let _this = this;
+                    let pages = [];
+                    let startPage, endPage;
+                    let totalPages = this.pageTotal.TotalPages;
+                    _this.pageNow = this.pageTotal.CurrentPage;
+
+                    if (totalPages <= 5) {
+                        startPage = 1;
+                        endPage = totalPages;
+                    } else {
+                        if (_this.pageNow <= 3) {
+                            startPage = 1;
+                            endPage = 5;
+                        } else if (_this.pageNow + 1 >= totalPages) {
+                            startPage = totalPages - 4;
+                            endPage = totalPages;
+                        } else {
+                            startPage = _this.pageNow - 2;
+                            endPage = _this.pageNow + 2;
+                        }
+                    }
+                    for (let i = startPage; i <= endPage; i++) {
+                        pages.push(i);
+                    }
+                    return pages;
+                },
+                // ----------------------------------------------------
+                // 【 新增 】
+                create() {
+                    let _this = this;
+                    var request = {};
+                    request.MCNo = _this.addData.mCNo;
+                    request.ItemName = _this.addData.itemName;
+                    request.MIAction = _this.addData.mIAction;
+                    request.PowerView = _this.addData.powerView;
+                    request.PowerAdd = _this.addData.powerAdd;
+                    request.PowerDel = _this.addData.powerDel;
+                    request.PowerUpdate = _this.addData.powerUpdate;
+                    request.PowerGrant = _this.addData.powerGrant;
+                    request.Power1 = _this.addData.power1;
+                    request.Power2 = _this.addData.power2;
+                    request.Order = _this.addData.order;
+                    request.State = 0;
+                    request.MSNo = 1;
+
+                    axios.post(`/api/SystemItem/AddManageItem`, request, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    })
+                        .then(response => {
+                            //let MCXtrol = _this.getMCXtrolByMCNo(_this.addData.mCNo);
+                            //// 去產生Cshtml
+                            //_this.CreateCshtmlFile(MCXtrol, _this.addData.mIAction);
+                            //// 在Controller產生Action
+                            //_this.AddViewAction(MCXtrol, _this.addData.mIAction);
+                            alert("新增成功");
+                            window.location = `/Sys/System/Item`;
+                        })
+                        .catch(error => {
+                            alert('您有未完成的內容或填寫錯誤');
+                        });
+                },
+                // ----------------------------------------------------
+                // 【 修改 】
+                update() {
+                    let _this = this;
+                    var request = {};
+                    request.MCNo = _this.editData[0].MCNo;
+                    request.ItemName = _this.editData[0].ItemName;
+                    request.MIAction = _this.editData[0].MIAction;
+                    request.PowerView = _this.editData[0].PowerView;
+                    request.PowerAdd = _this.editData[0].PowerAdd;
+                    request.PowerDel = _this.editData[0].PowerDel;
+                    request.PowerUpdate = _this.editData[0].PowerUpdate;
+                    request.PowerGrant = _this.editData[0].PowerGrant;
+                    request.Power1 = _this.editData[0].Power1;
+                    request.Power2 = _this.editData[0].Power2;
+                    request.MSNo = _this.editData[0].MSNo;
+                    request.Order = _this.editData[0].Order;
+
+                    axios.patch(`/api/SystemItem/UpdateManageItem/${_this.editMINo}`, request, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    })
+                        .then(response => {
+                            alert("修改成功");
+                            window.location = `/Sys/System/Item`;
+                        })
+                        .catch(error => alert(error));
+                },
+
+                // ----------------------------------------------------
+                // 【 刪除 】
+                deleteSelected() {
+                    if (this.selectAll) {
+                        this.checkAll();
+                    }
+                    // 取得被勾選的項目
+                    const selectedItems = this.selectedItems;
+
+                    // 如果沒有項目被勾選，結束函數
+                    if (selectedItems.length === 0) {
+                        alert('您沒有選擇要刪除的資料')
+                        return;
+                    }
+
+                    // 將勾選的項目編號做成一個字串
+                    const checkedParams = selectedItems.map(item => `MINo=${item}`).join('&');
+
+                    // 呼叫 deleteRenderingData 方法
+                    this.deleteData(checkedParams)
+                        .then(() => {
+                            // 清空 selectedItems 陣列
+                            this.selectedItems = [];
+                        })
+                        .catch((error) => {
+                            // 刪除失敗，顯示錯誤訊息
+                            alert('刪除失敗');
+                        });
+                },
+                /* 批次刪除資料 */
+                deleteData(checkedParams) {
+                    //console.log(this.selectedItems);
+                    if (confirm("確定要刪除所選擇的資料嗎？")) {
+                        axios.delete(`/api/SystemItem/DeleteItemClassBatch/batch?${checkedParams}`, {
+                            headers: {
+                                "Authorization": `Bearer ${token}`
+                            }
+                        })
+                            .then(response => {
+                                this.getDataPaged(this.pageNow);
+                                setTimeout(function () {
+                                    alert('刪除成功！');
+                                }, 180);
+                            })
+                            .catch(error => {
+                                console.log(error);
+                            });
+                    }
+                },
+                /* 全選 */
+                checkAll() {
+                    let delCodes = document.getElementsByName("del_code");
+                    let checkAll = document.getElementById("checkAll");
+                    for (let i = 0; i < delCodes.length; i++) {
+                        delCodes[i].checked = checkAll.checked;
+                    }
+                    // 更新選取項目的陣列
+                    this.selectedItems = checkAll.checked ? this.RenderingData.map(item => item.MINo) : [];
+                },  
+            },
+        }).mount("#ItemVue");
+    </script>
+}

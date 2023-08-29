@@ -1,0 +1,462 @@
+@charset "utf-8";
+/* CSS Document */
+@media screen and (min-width: 768px) {
+}
+@media screen and (max-width: 1920px) {
+
+}
+@media screen and (max-width: 1024px) {
+.know .ti:after { width: 85%;}
+.search .days{width:44%;}
+.search .wclm{width: 10%;}
+.search .people{width:25%;}
+.search .btn_b {float: left;width:29%;}
+.container{max-width:1024px;width:100%;}
+.btn_link a{padding: 3px 5px;}
+.rwd-table .form-control{padding:6px 0px;}
+th[data-th="住宿日期"]{width: 11%;text-align: center;}
+th[data-th="平均每晚房價"]{width: 15%;text-align: center; }
+.rwd-table td[data-th="住宿日期"]{width: 7%;}
+.rwd-table td[data-th="平均每晚房價"]{width: 15%;text-align: center; }
+.rwd-table td[data-th="房況"]{ font-size:90%;}
+
+}
+@media screen and (max-width: 995px) {
+.container{max-width:995px;width:100%;}
+	#easytraveltop_dot{display: none;}
+	.nav-wrap.navFix{position: fixed;top: 0;left: 0; margin-top: 105px; transition: opacity .5s ease-out;
+	box-shadow: 2px 2px 5px rgba(0,0,0,.2); z-index: 5;} 
+	.search .days p,.search .people p,.search .btn_b {
+	font-size: 85%;
+}
+.search .days{width:44%;}
+.search .wclm{width: 10%;}
+.search .people{width:25%;}
+.search .btn_b {float: left;width:29%;}
+.search .btn-style {
+	padding: 14px 6px;}
+.btn_link a{
+	padding: 3px 10px;
+	
+}	
+}
+@media screen and (max-width: 768px) {
+header img{height: 50px;}
+#easytraveltop_dot{display: none;}
+/*nav*/
+#facility,#t_map,#regulation{
+	padding-top: 20px;
+}
+
+.nav-wrap li span{
+	display: none;
+}
+.nav-wrap li a {display: block;padding: 0 10px; color: #333; text-decoration: none; font-size:95%}
+.nav-wrap.navFix{position: fixed;top: 0;left: 0; margin-top: 40px; transition: opacity .5s ease-out;
+	box-shadow: 2px 2px 5px rgba(0,0,0,.2); z-index: 5;} 
+/*nav end*/
+
+
+#traffic .guidelist .list li{
+	float: left;
+	width:33.3%;
+	padding-right: 5px;
+}
+.selected{
+	color: #1bb47c;
+	font-size: 90%;
+	display: inline-block;
+	margin: 0 0px;
+	font-weight: bold;
+}
+
+#step .box{
+	width: 100%;
+}
+#commodity {width: 100%;}
+.pay .wtd1{width: 15%;}
+.pay .wtd2{width: 20%;}
+.pay .wtd3{width: 15%;}
+.pay .wtd4{width: 50%;}
+.pay .wtd5{width: 85%;}
+.search_m{
+	display: block;
+	width: 100%;
+}
+.search_pc{display: none;}
+.search .days,.search .people,.search .btn_b{width:100%; margin-right:0%; margin-bottom:10px;}
+
+
+.search .days p{
+	font-size: 90%;
+}
+.room_info .pic {
+	overflow: hidden;
+	position: relative;
+	height:300px;
+	width: 100%;
+	max-width: 100%;
+	margin: auto;
+}
+.room_info .pic img {
+    transition: all 0.3s linear;
+    -webkit-backface-visibility: hidden;
+	height: auto;width: 100%;
+	position: absolute;
+    -webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+}
+
+.room_info{width: 100%;float: left;}
+.room_info,.room_table{width: 100%;}
+.room_info_main dl{
+	display: none;
+}
+.btn_s{
+	position: static;
+	left: 0px;
+	bottom: 0px;
+}
+.single-item{
+	height: 150px;
+	position: relative;
+	overflow: hidden;
+	margin-bottom:0px;
+}
+.facility_photo>li{
+	height: 330px;
+	
+}
+.facility_photo .textpic{
+	height: 180px;
+}
+.single-item .carousel-inner {
+ 	height: 150px;
+ 	position: relative;
+ 	overflow: hidden;
+ 	background-color: #000;
+ }
+.total{border: 1px solid #25c19c;}
+.total .order_ti{
+	font-size: 110%;
+	color: #25c19c;
+	padding: 10px 15px;
+	/*background-color: #25c19c;*/	
+	
+}
+.order_list{
+	display: none;
+}
+.box .col-md-6 .btnstyle{
+	text-align: center;
+	margin-top: 10px;
+}
+#news .pic ,#news .pic img{height: 130px;}
+.fp	form{
+	margin: auto;
+	width: 80%;
+}
+}
+
+@media screen and (max-width: 680px) {
+
+header img{height: 40px;}
+.single-item{
+	height: 200px;
+	position: relative;
+	overflow: hidden;
+	margin-bottom:0px;
+}
+.single-item .carousel-inner {
+ 	height: 200px;
+ 	position: relative;
+ 	overflow: hidden;
+ 	background-color: #000;
+ }
+#step .container h3 span.fc-og{font-size: 60%;}
+.container h3{margin: 40px 0px 0px 0px; font-size: 160%;}
+h3,h2,{font-size: 160%;line-height: 35px;margin: 20px 0px 0px 0px;}
+.intro-title .name{font-size: 150%; margin-top:35px;}
+.intro-title .name .fa-star{font-size: 60%; }
+.intro-title .label_s li{font-size: 85%;}
+.hotel .col-md-4{padding-left:0px;padding-right:0px;margin-top:0px;}
+
+.room_info,.room_table{width: 100%;}
+.room_info .pic {
+	overflow: hidden;
+	position: relative;
+	height:220px;
+	width: 100%;
+	max-width: 100%;
+	margin: auto;
+}
+.room_info .pic img {
+    transition: all 0.3s linear;
+    -webkit-backface-visibility: hidden;
+	height: 220px;
+	position: absolute;
+    -webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+}
+.count,.room_info_main dl{
+	display: none;
+}
+.count_m{
+	display: block;
+	width: 100%;
+	text-align: center;
+	padding: 5px;
+}
+.btn_s{
+	position: static;
+	left: 0px;
+	bottom: 0px;
+}
+.container .search{
+	background-color: #f7f8f8;
+	margin-right: -15px;
+	margin-left: -15px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding: 15px;
+}
+
+.search_m{
+	display: block;
+	width: 100%;
+}
+.search_pc{display: none;}
+.search .days,.search .people,.search .btn_b{width:100%; margin-right:0%; margin-bottom:10px;}
+
+
+.search .days p{
+	font-size: 90%;
+}
+.hotel-intro .data-table li{float: left;width: 100%;}
+.hotel-intro .name{font-size: 110%;}
+.facility_photo>li{
+	float: left;
+	width: 100%; margin:10px 0% 20px 0px;height: auto;
+	
+}
+.facility_photo .textpic{
+	height: auto;
+}
+#traffic .search .att2 {
+	border: 1px solid #999999;
+	margin: 5px;
+	padding: 7px;
+	font-family: "微軟正黑體", sans-serif;
+	font-size: 90%;
+	width:70%;
+}
+#traffic .guidelist .list li{
+	float: left;
+	width:100%;
+	padding-right: 0px;
+}
+.hotel-intro .name_ti,.hotel-intro .data-table li .name{font-size: 110%;}
+.know .ti{font-size: 140%; margin:15px 0px 0px 0px;}
+.know .ti:after { width: 70%;}
+.know .tip{font-size: 110%;margin:10px 0px 5px 0px;}
+.title02,.title03{font-size: 100%;}
+.room_ti{font-size: 120%;line-height: 35px;}
+.checkbox-select{margin-right: 5px;margin-top:0px;}
+.checkbox-select label {
+	font-size:90%;
+	margin-bottom: 10px;	
+	padding: 3px 5px  3px 28px;
+	background-position: 2px center;
+}
+.checkbox-select .radio-none[type=checkbox]:checked + label {
+	background-position: 2px center;
+}
+.radio_a{width: 100%;margin-top:5px;}
+#step .box,.box4{width: 100%; padding:8px;}
+.form .group{float: left;width: 100%;}
+.form .notes{padding-left: 10px;font-size:85%;}
+.form .w50{width: 100%;float: left; margin-bottom:10px;}
+.form .group1 .col-md-6.col-xs-12{ margin-top:10px;}
+
+#commodity li{width: 49%;margin-right: 2%;}
+#commodity li:nth-child(2n){margin-right: 0%;}
+#commodity li .pic,#commodity li .pic img{height:120px;}
+#commodity li .col .form-control{font-size:85%;padding: 5px;}
+.order_list{
+	display: none;
+}
+#processor .step_line {width: 80%;background-color: #bdbdbd;height: 1px;position: absolute;top: 30%;left: 10%;margin: auto;z-index: 1;}
+#processor .processorBox h4 {font-size: 80%;margin-top: 0px;line-height: 18px;}
+#processor{padding: 5px 0px;position: relative;}
+#processor .processorBox li .icon_step {
+	width: 40px;
+	height: 40px;
+	line-height: 30px;
+	font-size: 100%;
+	
+}
+.pay{background-color: #f0f0f0;}
+.pay .wtd1{width: 30%;float: left;vertical-align: middle;background-color: #f0f0f0;}
+.pay .wtd2,.pay .wtd3,.pay .wtd4,.pay .wtd5,.pay .wtd6{width: 70%;float: left;}
+.map_pic_pc{
+	display: none;
+}
+.map_pic_m{
+	display: block;
+}
+.number_m{
+	display: block;
+	/*float: left;*/
+}
+.number_pc{display: none;}
+.number_btn{
+	width: 50%;
+	float: right;
+}
+.box .col-md-6 .btnstyle{
+	text-align: center;
+	margin-top: 10px;
+}
+.ps{
+	line-height: 25px;
+}
+.box .rule_open .know .tis{font-size: 140%; margin:15px 0px 0px 0px;}
+.box .rule_open .know .tis:after { width: 70%;}
+.radio_a p{
+	font-size: 100%;
+	color: #000;
+	line-height: 20px;
+	margin-top: 5px;
+}
+
+#footer{padding-top:5px;}
+
+
+#room_type .r_main{
+	height: auto;
+	position: relative;
+	
+}
+#room_type .r_main .onclick{
+	position: static;
+	left: 15px;
+	bottom: 10px;
+}
+#room_type .col-left{width: 100%;
+	margin-right:0%;}
+#room_type .col-right{
+	width: 100%;
+	float: none;
+}
+#room_type .roomlist li .col-md-2.pricebox{
+	padding-top: 0px; border-bottom: 1px solid #CCC;
+}
+#room_type .roomlist .pic,#room_type .roomlist .pic img {height:220px;width: 100%;}
+
+.under{-webkit-box-ordinal-group:14;-ms-flex-order:13;order:13}
+.right_nav{
+	width: 100%;
+	text-align: right;
+	background-color: #f3f9f7;
+	margin-bottom: 8px;
+	position: absolute;
+	top: 0px;
+	margin-right: -15px;
+	margin-left: -15px;
+	z-index: 11;
+	padding: 5px;
+}
+#step  .fp.mt form h3 {
+	font-size: 150%;
+	margin-bottom: 10px;
+}
+.fp	form{
+	margin: auto;
+	width: 100%;
+}
+#member .leftdiv,#member .rightdiv{width: 100%;}
+#member .membermenu li a{
+	border-bottom: 1px solid #1ab372;
+	padding: 5px 0px;
+	margin: 0px 0px 20px  0px;
+	color: #333;
+	display: inline-block;
+	width: 33.3%;
+	float: left;
+	text-align: center;
+}
+#member .membermenu li a.on{
+	background-color:#1ab372;
+	color:#FFF;
+}
+#member .tableopen {
+	background-color:#1ab372;width: 100%;
+}
+#member .tableopen a {
+	color:#FFF;
+}
+.data-th .rwd-table td[data-th="數量"]{
+	width:100%;
+}
+.data-th .rwd-table td[data-th="訂單編號"]{ width:100%;}
+.data-th .rwd-table td[data-th="飯店"]{width:100%;}
+.data-th .rwd-table td[data-th="訂單狀態"]{width:100%;}
+.data-th .rwd-table td[data-th="總金額"]{width:100%;}
+.data-th .rwd-table td[data-th="紅利折扣"]{width:100%;}
+.data-th .rwd-table td[data-th="聯絡客服"]{width:100%;}
+.data-th .rwd-table td[data-th="異動"]{width:100%;}
+.data-th .rwd-table td[data-th="住房評鑑"]{width:100%;}
+.modal-body.data-th td[data-th="房型/專案"],.modal-body.data-th td[data-th="異動"]{width:100%;}
+.data-th .rwd-table td:before{
+	color: #0b975c;
+}
+.data-th .rwd-table{
+	margin-top:10px;
+}
+.data-th .rwd-table tr{
+	border: 1px solid #ebebec;
+}
+.data-th .rwd-table td{
+	text-align: left;
+	padding:8px;
+	margin:5px 8px;	
+	border:none;
+	border-bottom: 1px solid #ebebec;
+}
+.data-th .rwd-table td:last-child{
+ border-bottom:none;
+}
+.change1 span{
+	margin-bottom: 10px;
+	display: inline-block;
+}
+.change1 span.tiname{
+display:block;
+margin:0px 0px 0px 0px;
+}
+.change1 .search{
+	padding: 0px;margin:0px;
+}
+}
+@media screen and (min-width: 640px) {
+
+}
+@media screen and (max-width: 480px) {
+
+
+
+}
+@media screen and (max-width: 375px) {
+
+}
+@media screen and (max-width: 360px) {
+
+}
+@media screen and (max-width: 320px) {
+.nav-wrap li a {display: block;padding: 0 8px; color: #333; text-decoration: none; font-size:95%}
+#room_type .roomlist .pic,#room_type .roomlist .pic img {height:180px;width: 100%;}
+}

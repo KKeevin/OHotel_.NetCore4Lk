@@ -1,0 +1,182 @@
+﻿@{
+    //ViewData["Title"] = "";
+}
+@section Styles{
+}
+
+<main class="app-content">
+    <!-- 所在位置 -->
+    <div class="app-title">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">系統管理</li>
+            <li class="breadcrumb-item active">餐點編輯</li>
+        </ol>
+    </div>
+    <!-- 所在位置 end-->
+    <!-- 內容 -->
+    <div class=" tile">
+        <div class="tabs mt-none">
+            <ul class="nav nav-tabs nav-justifie">
+                <li class="active"><a href="#list" data-toggle="tab"><i class="fa fa-list"></i>列表</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade in active clearfix" id="home">
+                    <!-- form -->
+                    <form class="form-horizontal" id="form1" action="EH_Foodie.aspx" method="post" name="form1" enctype="multipart/form-data">
+                        <input type="hidden" name="AVG" id="AVG" value="&amp;">
+                        <input type="hidden" name="OrderBase" value="8">
+                        <input type="hidden" name="Order" value="0">
+                        <input type="hidden" name="Page" value="1">
+                        <input type="hidden" name="OrderClass" value="">
+                        <input type="hidden" name="flag" value="">
+                        <input type="hidden" name="No" value="">
+                        <!---->
+                        <div class="row">
+                            <div class="form-group row col-md-3">
+                                <label class="control-label col-md-3">搜尋</label>
+                                <div class="col-md-9">
+                                    <input class="form-control" type="text" id="SerchContent" name="SerchContent" placeholder="搜尋" value="" style="display: block;">
+                                </div>
+                            </div>
+                            <div class="form-group row col-md-3">
+                                <label class="control-label col-md-3">
+                                    搜尋欄位
+                                </label>
+                                <div class="col-md-9">
+                                    <select class="form-control" id="SerchKey" name="SerchKey">
+                                        <option value="EHotel_Food.FoodName">食物名稱</option>
+                                        <option value="EHotel_Food.Categories">食物種類</option>
+                                    </select>
+                                    <select class="form-control" id="SerchCat" name="SerchCat" style="display: none;">
+                                        <option>請選擇種類</option>
+                                        <option value="food">主餐</option>
+                                        <option value="snack">點心</option>
+                                        <option value="beverage">飲料</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row col-md-3">
+                                <div class="col-md-6">
+                                    <button class="btn btn-primary viewimage" onclick="sys.SH('form1','EH_Foodie.aspx');"><i class="fa fa-search"></i>查詢</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="OHtelVue">
+                            <div class="form-horizontal row form-inline md" id="tabletop">
+                                <div class="col-sm-6">
+                                    <div class="padl">
+                                        <input type="checkbox" id="checkAll" onclick="CheckAll();">全選
+                                        <button class="btn btn-danger deldata ml1" type="button" onclick="sys.Del('form1', 'ManageClass_.aspx');"><i class="fa fa-remove"></i>刪除</button>
+                                        <button class="btn btn-success ml1" type="button" onclick="sys.Send('form1', 'ManageClass_A.aspx');"><i class="fa fa-plus-square-o"></i>新增</button>
+                                        <button class="btn btn-info ml1" id="FastOrder" type="button"><i class="fa fa-reorder"></i>快速排序</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <table class="table rwd-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-md-1"></th>
+                                            <th class="col-md-1">操作</th>
+                                            <th class="col-md-1"><a href="javascript:void(0)" onclick="sys.OrderField('form1',1,1);"><i class="fa fa-fw fa-sort"></i>編號</a></th>
+                                            <th>食物名稱</th>
+                                            <th>說明</th>
+                                            <th><a href="javascript:void(0)" onclick="sys.OrderField('form1',2,1);"><i class="fa fa-fw fa-sort"></i>單價</a></th>
+                                            <th><a href="javascript:void(0)" onclick="sys.OrderField('form1',3,1);"><i class="fa fa-fw fa-sort"></i>今日存貨</a></th>
+                                            <th><a href="javascript:void(0)" onclick="sys.OrderField('form1',4,1);"><i class="fa fa-fw fa-sort"></i>餐點種類</a></th>
+                                            <th><a href="javascript:void(0)" onclick="sys.OrderField('form1',5,1);"><i class="fa fa-fw fa-sort"></i>發布狀態</a></th>
+                                            <th><a href="javascript:void(0)" onclick="sys.OrderField('form1',6,1);"><i class="fa fa-fw fa-sort"></i>異動時間</a></th>
+                                            <th><a href="javascript:void(0)" onclick="sys.OrderField('form1',7,1);"><i class="fa fa-fw fa-sort"></i>總銷售量</a></th>
+                                            <th><a href="javascript:void(0)" onclick="sys.OrderField('form1',8,1);"><i class="fa fa-fw fa-sort"></i>排序</a></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in EHotelFoodData" :key="index">
+                                            <td data-th="刪除"><input name="del_code" class="del_code" type="checkbox" :value=`${item.FoodNo}`></td>
+                                            <td data-th="操作"><a class="btn btn-success" title="編輯" href="javascript:void(0)" onclick="sys.UP('form1',33,'EH_Foodie_M.aspx')"><i class="fa fa-edit"></i>編輯</a></td>
+                                            <td data-th="編號">{{item.FoodNo}}</td>
+                                            <td data-th="餐點名稱">{{item.FoodName}}</td>
+                                            <td data-th="說明">{{item.FoodContnet}}</td>
+                                            <td data-th="單價">NT${{item.FoodPrice}}</td>
+                                            <td data-th="今日存貨">{{item.FoodStock}}</td>
+                                            <td data-th="餐點種類">{{item.Categories}}</td>
+                                            <td data-th="發佈狀態">{{item.FoodIsSell}}</td>
+                                            <td data-th="異動時間">{{new Date(item.FoodUpdateTime).toLocaleString().replace(',', '')}}</td>
+                                            <td data-th="總銷售量">{{item.FoodOderCount}}</td>
+                                            <td data-th="排序">{{item.Order}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <ul class="pagination"><li class="active"><a href="javascript:void(0)">{{pageTotal.CurrentPage}}</a></li><li><a href="javascript:void(0)" onclick="sys.CPage('form1',2)">{{pageTotal.TotalPages}}</a></li><li><a href="javascript:void(0)" onclick="sys.CPage('form1',2)">下一頁</a></li><li class="number">第{{pageTotal.CurrentPage}}/{{pageTotal.TotalPages}}頁  共{{pageTotal.TotalCount}}記錄</li></ul>
+                        </div>
+                    </form>
+                    <!-- form -->
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+@section Scripts{
+    <script>
+// 【 Food/Index.cshtml 】 這隻是起初的測試，還沒完成的
+const OHtelVue = Vue.createApp({
+    data() {
+        return {
+            EHotelFoodData: null,
+            pageSize: 4,
+            pageNow: 1,
+            pageTotal: null,
+        };
+    },
+    mounted() {
+        let _this = this;
+        _this.getEHotelFoodData(_this.pageNow);
+    },
+    methods: {
+        getEHotelFoodData(pageNow) {
+            axios.get(`/api/EHotelFood/GetEHotel_Food_Paged?page=${pageNow}&pageSize=${this.pageSize}&selectFrom=EHotel_Food&orderBy=FoodNo%20ASC`).then(
+                response => {
+                    let _this = this;
+                    _this.pageTotal = response.data.Paging;
+                    _this.EHotelFoodData = response.data.Data.map(item => {
+                        // 將 Categories 欄位的內容轉換成中文
+                        switch (item.Categories) {
+                            case "food":
+                                item.Categories = "主餐";
+                                break;
+                            case "snack":
+                                item.Categories = "甜點";
+                                break;
+                            case "beverage":
+                                item.Categories = "飲料";
+                                break;
+                            default:
+                                item.Categories = "其他";
+                                break;
+                        }
+                        // 將 FoodIsSell 欄位的值轉換成中文狀態
+                        switch (item.FoodIsSell) {
+                            case 1:
+                                item.FoodIsSell = "已發布";
+                                break;
+                            case 0:
+                                item.FoodIsSell = "停止";
+                                break;
+                            default:
+                                item.FoodIsSell = "未知狀態";
+                                break;
+                        }
+                        return item;
+                    });
+                }
+            ).catch(
+                error => {
+                    console.log(error);
+                }
+            );
+        },
+    },
+}).mount("#OHtelVue");
+    </script>
+}

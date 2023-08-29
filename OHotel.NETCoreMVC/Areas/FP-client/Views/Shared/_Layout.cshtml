@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, target-densitydpi=medium-dpi">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="title" content="飯店名稱">
+    <meta name="KeyWords" content="">
+    <meta name="Description" content="">
+    <meta name="copyright" content="本網頁著作權屬智凰網路科技所有！">
+    <meta name="Robots" content="INDEX,FOLLOW">
+    <meta name="revisit-after" content="1">
+    <title>飯店名稱</title>
+    <link rel="stylesheet" type="text/css" href="~/css/fp/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="~/css/fp/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="~/css/fp/slick.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Amiko">
+    <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/css/fp/HPlant_v01.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/fp/hotel.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/fp/rwd.css">
+    <link rel="stylesheet" type="text/css" href="~/css/fp/lightbox.css" />
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    @await RenderSectionAsync("Styles", required: false)
+    <!-- IE Fix for HTML5 Tags -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 11]>
+    <script>
+    alert('您正在使用版本過舊的瀏覽器，系統即將自動導向google瀏覽器下載頁面');
+    window.location="https://www.google.com.tw/chrome/browser/desktop/";
+    </script>
+    <![endif]-->
+</head>
+<body>
+    <partial name="_Header" />
+    @RenderBody()
+    <partial name="_Footer" />
+    <!-- Essential frameworks for application to work -->
+    <script src="~/lib/vue/vue.global.prod.js"></script>
+    <script src="~/lib/axios/axios.min.js"></script>
+    <script src="~/js/fp/vue_web.js" asp-append-version="true"></script>
+    <!-- Essential Styles for application to work -->
+    <script type="text/javascript" src="~/js/fp/jquery.min.js"></script>
+    <script type="text/javascript" src="~/js/fp/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/js/fp/slick.min.js"></script>
+    @* ----------- 渲染頁面JS ----------- *@
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,113 @@
+﻿<div class="pheight"></div>
+<div id="vuevuevuevue">
+    <div id="detail">
+        <div class="wrapper clearfix">
+            <h2>旅宿之精緻住房</h2>
+            <div class="slick slick-initialized slick-slider">
+
+                <div aria-live="polite" class="slick-list draggable"><div class="slick-track" style="opacity: 1; width: 0px; transform: translate3d(0px, 0px, 0px);" role="listbox"></div></div>
+            </div>
+            <div class="mt editor">
+                <p>
+                    賓利酒店位於桃園中壢鬧區，<br>
+                    距離中壢車站步行約6分可達，<br>
+                    附近商店林立且靠近市區各大景點，<br>
+                    客房精緻舒適且房型多樣，<br>
+                    交通便利及選擇多樣性的賓利酒店是您最好的選擇
+                </p>
+
+
+            </div>
+        </div>
+        <!-- 詳細頁END -->
+    </div>
+</div>
+@section Scripts{
+    <script>
+        //登入註冊
+        $(function () {
+            $('#login-form-link').click(function (e) {
+                $("#login-form").delay(100).fadeIn(100);
+                $("#register-form").fadeOut(100);
+                $('#register-form-link').removeClass('active');
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+            $('#register-form-link').click(function (e) {
+                $("#register-form").delay(100).fadeIn(100);
+                $("#login-form").fadeOut(100);
+                $('#login-form-link').removeClass('active');
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+
+        });
+        $('.carousel').carousel({
+            interval: false
+        })
+        $('#myModal').on('shown.bs.modal', function () {
+            $('#myInput').focus()
+        })
+
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "100%";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+        $(window).resize(function () {
+            var w = $(this).width();
+            if (w > 1024) {
+
+                $("#mySidenav").css("width", "100%");
+            } else {
+
+                $("#mySidenav").css("width", "0");
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#head-carousel').slick({
+                dots: true,
+                infinite: true,
+                speed: 500,
+                autoplay: true,
+                fade: true,
+                arrows: false,
+                cssEase: 'linear'
+            });
+            $('.roomslick').slick({
+                dots: true,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 1,
+                adaptiveHeight: true, arrows: false,
+                cssEase: 'linear',
+            });
+            $('.single-item').slick();
+        });
+        $(function () {
+            $("#tt").click(function () {
+                $("#OPEN").addClass("animated fadeInRightBig floatLeft");
+            })
+        });
+    </script>
+    <script src="~/js/fp/scrollReveal.js"></script>
+    <script>
+        $(function () {
+            var config = {
+                reset: false,
+                mobile: false,
+                delay: 'onload'
+            }
+            window.sr = new scrollReveal(config);
+        });
+    </script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({ pageLanguage: 'zh-TW', includedLanguages: 'en,ja,zh-CN,zh-TW', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element');
+        }
+    </script>
+}

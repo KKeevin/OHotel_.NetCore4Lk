@@ -1,0 +1,60 @@
+﻿@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>飯店後端管理</title>
+    @* ------------------ NEW ADD ------------------ *@
+    <script src="https://kit.fontawesome.com/f9115293c8.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/main.css" asp-append-version="true" />
+    @* --------------------------------------------- *@
+
+</head>
+<body id="login">
+    <div id="LoginVue">
+        <ul class="loginbox">
+            <li class="personpic">
+                <img src="~/img/sys/loginpic.png" alt="人物代表圖">
+            </li>
+            <li>
+                <p>特斯德飯店後端管理後端管理</p>
+            </li>
+            <li>
+                <i class="fa fa-user"></i>
+                <input type="text" class="form-control " placeholder="帳號" v-model="account">
+                <div class="fc-red"></div>
+            </li>
+            <li>
+                <i class="fa fa-lock"></i>
+                <input type="password" class="form-control" placeholder="密碼" v-model="password">
+                <div class="fc-red"></div>
+            </li>
+            <li>
+                <i class="fa fa-key"></i>
+                <input type="text" class="form-control" placeholder="驗證碼" v-model="inputCaptcha">
+                <div class="fc-red"></div>
+            </li>
+            <li>
+                <canvas ref="captchaCanvas" width="72" height="30"></canvas><br/><button class="btn btn-secondary" @@click="refreshCaptcha">換一個</button>
+            </li>
+            <li>
+                <div class="fc-red"></div>
+            </li>
+            <li>
+                <button class="btn btn-primary btn-block" @@click="checkLogin">登入</button>
+            </li>
+        </ul>
+    </div>
+    <!-- Essential frameworks for application to work -->
+    <script src="~/lib/vue/vue.global.prod.js"></script>
+    <script src="~/lib/axios/axios.min.js"></script>
+    <!-- Essential Styles for application to work -->
+    <script src="~/lib/jquery/dist/jquery-3.2.1.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap_origin.min.js"></script>
+    <!-- Customized JavaScript -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/vue_web.js" asp-append-version="true"></script>
+</body>
+</html>

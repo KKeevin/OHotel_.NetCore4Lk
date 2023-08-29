@@ -1,0 +1,28 @@
+﻿@{
+    //ViewData["Title"] = "";
+}
+@*<h1>@ViewData["Title"]</h1>*@
+
+<main class="app-content">
+    <!-- 所在位置 -->
+    <div class="app-title">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">系統管理</li>
+            <li class="breadcrumb-item active">飯店寫真設定</li>
+        </ol>
+    </div>
+    <!-- 所在位置 end-->
+    <!-- 內容 -->
+    <div class=" tile">
+        <div class="tabs mt-none">
+            <ul class="nav nav-tabs nav-justifie">
+                <li class="active"><a href="#Photos" data-toggle="tab"><i class="fa fa-list"></i>列表</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade in active clearfix" id="Photos">
+                    <div id="LoadingImage" fromoptionno="1" no="0"><div class="row"> <hr><div class="form-group row col-md-3"> <label for="inputPassword" class="col-md-3 control-label">圖片分類</label> <div class="col-md-9"> <select class="form-control" id="Filter_HCNo" name="HCNo"><option value="0">不分類</option><option value="1">松鼠</option></select></div> </div> <div class="form-group row col-md-3"> <label for="inputPassword" class="col-md-3 control-label">顯示內容</label> <div class="col-md-9"> <select class="form-control" id="Filter_ListType" name="ListType"><option value="0" selected="selected">全部列出</option><option value="1">已選擇</option><option value="2">未選擇</option><option value="3">代表圖</option></select></div> </div> <div class="form-group row col-md-3"> <label for="inputPassword" class="col-md-3 control-label">圖片描述</label><div class="col-md-9"> <input type="text" name="Keyword" class="form-control" id="Filter_Keyword" placeholder="圖片描述" value="" autocomplete="off"> </div> </div> <div class="form-group row col-md-3"><div class="col-md-6"><button class="btn btn-primary" type="button" id="ImageFilter" data-loading-text="籂選..."><i class="fa fa-search"></i>籂選</button></div></div></div><div class="form-horizontal row form-inline md"> <div class="col-sm-12" align="center"> <hr>松鼠<hr><div class="col-md-2 col-xs-6"><div class="pic"><img src="http://officialhotel.easytravel.com.tw/OHotel_Test1/ccc.jpgggg" style="width:150px;"></div>gggg<br><button class="btn btn-danger cancel_btn_0" type="button" onclick="set_choise('cancel','1','1','0','0','1');"><i class="fa fa-remove"></i>取消</button><button class="btn btn-info mainp_btn_0 mainp_set ml1" type="button" onclick="set_choise('mainp','1','1','0','0','1');"><i class="fa fa-check"></i>代表圖</button></div><div class="col-md-2 col-xs-6"><div class="pic"><img src="http://officialhotel.easytravel.com.tw/OHotel_Test1/ddd.png17417" style="width:150px;"></div>1741741<br><button class="btn btn-danger cancel_btn_1" type="button" onclick="set_choise('cancel','2','1','0','1','1');"><i class="fa fa-remove"></i>取消</button><button class="btn btn-info mainp_btn_1 mainp_set ml1" type="button" onclick="set_choise('mainp','2','1','0','1','1');"><i class="fa fa-check"></i>代表圖</button></div></div></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

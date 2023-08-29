@@ -1,0 +1,167 @@
+﻿<main class="app-content">
+    <div class="app-title">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">驗證碼&nbsp;</li>
+            <li class="breadcrumb-item active">隨機產生</li>
+        </ol>
+    </div>
+    <div class="tile" >
+        <div class="tabs mt-none" id="CaptchaVue">
+            <div>
+                <div>
+                    <canvas ref="captchaCanvas" width="72" height="30"></canvas>
+                    <button @@click="refreshCaptcha">Refresh</button>
+                </div>
+                <div>
+                    <input type="text" placeholder="驗證碼" v-model="inputCaptcha">
+                    <button class="btn btn-primary btn-block" @@click="checkCaptcha">確認驗證碼</button>
+                    <p v-if="showMessage">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div id="app2">
+            <!--HTML DOM template-->
+            <button v-on:click="content='name'"> Name </button>
+            <button v-on:click="content='date'"> Date </button>
+            <button v-on:click="content='lessons'"> Lessons </button>
+            <button v-on:click="content='apply'"> Apply </button>
+            <hr>
+            <keep-alive>
+                <component :is="content"></component>
+            </keep-alive>
+        </div>
+    </div>
+
+</main>
+@section Scripts{
+    <script>
+        // 【 Test.cshtml 】
+        const CaptchaVue = Vue.createApp({
+            data() {
+                return {
+                    captcha: '',
+                    inputCaptcha: '',
+                    showMessage: false,
+                    message: '',
+                };
+            },
+            created() {
+                this.refreshCaptcha();
+            },
+            mounted() {
+                this.drawCaptcha();
+            },
+            methods: {
+                generateCaptcha() {
+                    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+                    let captcha = '';
+
+                    for (let i = 0; i < 5; i++) {
+                        const randomIndex = Math.floor(Math.random() * characters.length);
+                        captcha += characters.charAt(randomIndex);
+                    }
+
+                    return captcha;
+                },
+                refreshCaptcha() {
+                    this.captcha = this.generateCaptcha();
+                    this.drawCaptcha();
+                    this.inputCaptcha = '';
+                    this.showMessage = false;
+                    this.message = '';
+                },
+                drawCaptcha() {
+                    const canvas = this.$refs.captchaCanvas;
+                    const ctx = canvas.getContext('2d');
+
+                    // 清空畫布
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // 繪製底色
+                    ctx.fillStyle = 'LightYellow';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // 設定字體
+                    ctx.font = 'bold 18px Verdana';
+                    ctx.fillStyle = 'black';
+                    ctx.textBaseline = 'middle';
+                    ctx.textAlign = 'center';
+
+                    // 繪製文字
+                    const textX = canvas.width / 2;
+                    const textY = canvas.height / 2;
+                    ctx.fillText(this.captcha, textX, textY);
+                },
+                checkCaptcha() {
+                    if (this.inputCaptcha === this.captcha) {
+                        this.showMessage = true;
+                        this.message = '驗證碼正確';
+                    } else {
+                        this.refreshCaptcha();
+                    }
+                },
+            },
+        }).mount("#CaptchaVue");
+    </script>
+    <script>
+        //************** CreateNew **************//
+        const VueEH = Vue.createApp({
+            data() {
+                return {
+                    colors: ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'],
+                }
+            },
+            methods: { // 函數(方法)大部分放這裡!
+                showColor(theColor) {
+                    alert(`Your color is ${theColor}`)
+                },
+            },
+        }).mount('#app')
+
+        //************** CreateNew **************//
+        const app = Vue.createApp({
+            data() {
+                return {
+                    content: 'name',
+                }
+            },
+        })
+        app.component('name', {
+            template: `
+                                                        <p>
+                                                            Your name: <input>
+                                                        </p>
+                                                    `,
+        })
+        app.component('date', {
+            template: `
+                                                        <p>
+                                                            <input type="checkbox"> Morning
+                                                            <input type="checkbox"> Afternoon
+                                                            <input type="checkbox"> Evening
+                                                        </p>
+                                                    `,
+        })
+        app.component('lessons', {
+            template: `
+                                                        <p>
+                                                            <input type="checkbox"> HTML
+                                                            <input type="checkbox"> CSS
+                                                            <input type="checkbox"> JavaScript
+                                                            <input type="checkbox"> jQuery
+                                                            <input type="checkbox"> HTML5
+                                                            <input type="checkbox"> VueJS
+                                                        </p>
+                                                    `,
+        })
+        app.component('apply', {
+            template: `
+                                                        <p>
+                                                            <textarea></textarea>
+                                                        </p>
+                                                            <button>Submit</button>
+                                                    `,
+        }).mount('#app2');
+    </script>
+}

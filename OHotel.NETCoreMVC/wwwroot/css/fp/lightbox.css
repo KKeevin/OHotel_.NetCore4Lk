@@ -1,0 +1,1105 @@
+/* 月曆 */
+@media screen and (min-width: 768px) {
+#calendar .modal-body::-webkit-scrollbar {width: 10px;}       
+#calendar .modal-body::-webkit-scrollbar-track {border-radius: 5px;background-color: #eee;}
+#calendar .modal-body::-webkit-scrollbar-thumb {border-radius: 5px; background: #b5b5b6;}
+#calendarroom  .modal-body::-webkit-scrollbar {width: 10px;}       
+#calendarroom  .modal-body::-webkit-scrollbar-track {border-radius: 5px;background-color: #eee;}
+#calendarroom  .modal-body::-webkit-scrollbar-thumb {border-radius: 5px; background: #b5b5b6;}
+}
+.fc-green{color: #16b38e;}
+#calendar .line{border-right: 1px solid #CCC;}
+#calendar .tyu{font-size: 70%;	font-weight: normal;color: #333;	}
+#calendar .modal-dialog{width:420px;margin:100px auto}
+#calendar .head1 {
+	/*font-size: 85%;*/
+	border-bottom: 1px solid #f1f1f1;
+	background-color: #f1f1f1;
+}
+
+#calendar .month-wrap {
+	width: 100%;
+	float: left;
+	margin: 0%;
+}
+#calendar .month-wrap{overflow: hidden; font-size: 100%; margin-top: 0px;font-family: Arial, Helvetica, sans-serif;}
+#calendar .month-wrap .head1 .week-wrap.holiday { color:#16b38e;  }
+#calendar .month-wrap .head1 .week-wrap {font-size: 90%;padding: 8px 0px;line-height: 15px;border-bottom: 1px solid #f1f1f1;font-family: "微軟正黑體";color: #000;}
+#calendar .week-wrap {width: 14.285%;float: left;text-align: center;}
+#calendar .week-wrap span{	
+	cursor: pointer;
+	padding: 14.285% 0px; line-height: 35px;
+	border-radius: 50%;
+	display: block;
+	
+}
+#calendar .week-wrap span:hover{
+	background-color: #25c19c;	
+	color: #FFF;
+
+	
+}
+#calendar .week-wrap .select{
+	cursor: pointer;
+	padding: 14.285% 0px; line-height: 35px;
+	border-radius: 50%;
+	display: block;
+	background-color: #25c19c;	
+	color: #FFF;
+}
+#calendar .hover{
+	background-color: #e7f5f0;
+}
+#calendar .month-title {
+	font-weight: bold;
+	text-align: center;
+	font-size: 115%;
+	padding: 10px 0px;
+	color: #000;
+	font-family: "微軟正黑體";
+	background-color: #FFF;
+	border-top: 1px solid #f1f1f1;
+
+}
+#calendar.scroll .modal-body {
+	padding-top: 0px;
+	text-align: center;
+}
+#calendar .modal-body {
+	padding: 0px;
+}
+#calendar .price{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 60%;
+	color: #eb3720;
+	margin-top: 0px;
+	font-weight: normal;
+}
+#calendar .rooms{
+	font-size: 20%;
+	margin-top: 15px;
+	color: #999;
+	line-height: 0px;
+}
+
+#calendar .icon-circle-border{font-size: 95%; width: 45px; height: 45px;}
+#calendar .holiday { color:#16b38e;  }
+#calendar .holiday .none{ color:#a5ded1;}
+#calendar .none { color: #ccc; }
+#calendar .stay {border-top:1px solid #f1f1f1;font-size: 110%;}
+#calendar .stay .room-nu{
+	font-size: 130%;
+	color: #f4655d;
+	margin-right: 10px;
+	margin-left: 10px;
+	line-height: 35px;
+	float: left;
+}
+#calendar .stay .room-sw{width: auto;}
+
+#calendar .room-nu {
+	margin-right: 15px;
+	margin-left: 15px;
+}
+ 
+#calendar .footer{
+	border-top: 1px solid #eceeef;
+	text-align: right;
+	padding-top: 20px;
+	font-size: 105%;
+	font-weight: bold;
+	color: #333;
+}
+#calendar .modal-content{
+	width: 100%;
+	padding:20px;
+
+
+ }
+#calendar .modal-content .bt-two{
+	width: 46%;
+	font-size: 140%;
+	font-weight: bold;
+	float: left;
+	text-align: center;
+	margin: 10px 2%;
+
+ }
+#calendar .modal-body {
+	padding: 0px;
+	height: 450px;
+	overflow: auto;
+}
+
+#calendar .modal-content .close {
+	width: 35px;
+	height: 35px;
+	text-align: center;
+	position: absolute;
+	z-index: 2;
+	top: 8px;
+	right: 8px;
+ }
+#calendar .modal-content .angle-right{
+	position: absolute;
+	top: 45%;
+	right: 0px;
+	z-index: 2;
+	font-size: 200%;
+	background-color: transparent;
+	text-align: center;
+	vertical-align: middle;
+	outline: none; /* for Firefox Google Chrome  */
+    behavior:expression(this.onFocus=this.blur()); /* for IE */
+	display: none;
+}
+
+#calendar .modal-content .angle-left{
+    display: none;
+	position: absolute;
+	top: 45%;
+	left: 0px;
+	z-index: 2;
+	font-size: 200%;
+	background-color:transparent;
+	text-align: center;
+	vertical-align: middle;
+	outline: none; /* for Firefox Google Chrome  */
+    behavior:expression(this.onFocus=this.blur()); /* for IE */
+
+}
+/* 月曆 end*/
+#myModal .modal-dialog{
+	width:450px;margin:100px auto
+}
+/* 房況月曆 */
+#calendarroom .line{border-right: 1px solid #CCC;}
+#calendarroom .tyu{font-size: 70%;	font-weight: normal;color: #333;	}
+#calendarroom .modal-dialog{width:450px;margin:100px auto}
+#calendarroom .head1 {
+	/*font-size: 85%;*/
+	border-bottom: 1px solid #f1f1f1;
+	background-color: #f1f1f1;
+}
+#calendarroom .month-wrap {
+	width: 100%;
+	float: left;
+	margin: 0%;
+}
+#calendarroom .month-wrap{overflow: hidden; font-size: 100%; margin-top: 0px;font-family: Arial, Helvetica, sans-serif;}
+#calendarroom .month-wrap .head1 .week-wrap.holiday { color:#16b38e;  }
+#calendarroom .month-wrap .head1 .week-wrap {font-size: 90%;padding: 8px 0px;line-height: 15px;border-bottom: 1px solid #f1f1f1;font-family: "微軟正黑體";color: #000;height: auto;}
+#calendarroom .week-wrap {
+	width: 14.285%;
+	float: left;
+	text-align: center;
+	height: 63px;
+	position: relative;
+}
+#calendarroom .week-wrap span{
+
+	padding: 15px 0px 3px 0px;
+	line-height: 15px;
+	
+	display: block;
+}
+
+#calendarroom .selectdiv{
+	background-color: #e7f5f0;
+	padding: 10px;
+}
+
+#calendarroom .month-title {
+	font-weight: bold;
+	text-align: center;
+	font-size: 115%;
+	padding: 10px 0px;
+	color: #000;
+	font-family: "微軟正黑體";
+	background-color: #FFF;
+	border-top: 1px solid #f1f1f1;
+
+}
+#calendarroom.scroll .modal-body {
+	padding-top: 0px;
+	text-align: center;
+}
+#calendarroom .modal-body {
+	padding: 0px;padding: 0px;
+	height: 470px;
+	overflow: auto;
+}
+#calendarroom .price{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 80%;
+	color: #eb3720;
+	line-height: 15px;
+}
+#calendarroom .room_a {
+	font-size: 70%;
+	color: #FFF;
+	font-family: "微軟正黑體";
+	background-color: #23b376;
+	letter-spacing: 0em;
+	width: 100%;
+	line-height: 15px;
+	position: absolute;
+	bottom: 0px;
+	overflow: hidden;
+	text-overflow : ellipsis;
+	white-space : nowrap;
+	border-right: 1px solid #FFF;
+
+}
+#calendarroom .room_a a{
+	color: #FFF;
+	text-decoration: none;
+}
+#calendarroom .room_b{
+	font-size: 70%;
+	color: #595757;
+	font-family: "微軟正黑體";
+	background-color: #e7f5f0;
+	letter-spacing: 0em;
+	width: 100%;
+	line-height: 15px;
+	position: absolute;
+	bottom: 0px;overflow:hidden;
+	text-overflow : ellipsis;
+        white-space : nowrap;
+		border-right: 1px solid #FFF;
+}
+#calendarroom .room_c{
+	font-size: 70%;
+	color: #FFF;
+	font-family: "微軟正黑體";
+	background-color: #f76f25;
+	letter-spacing: 0em;
+	width: 100%;
+	line-height: 15px;
+	position: absolute;
+	bottom: 0px;
+	border-right: 1px solid #FFF;
+}
+#calendarroom .icon-circle-border{font-size: 95%; width: 45px; height: 45px;}
+#calendarroom .holiday { color:#16b38e;  }
+#calendarroom .holiday .none{ color:#a5ded1;}
+#calendarroom .none { color: #ccc; }
+#calendarroom .stay {border-top:1px solid #f1f1f1;font-size: 110%;}
+#calendarroom .stay .room-nu{
+	font-size: 130%;
+	color: #f4655d;
+	margin-right: 10px;
+	margin-left: 10px;
+	line-height: 35px;
+	float: left;
+}
+#calendarroom .stay .room-sw{width: auto;}
+
+#calendarroom .room-nu {
+	margin-right: 15px;
+	margin-left: 15px;
+}
+ 
+#calendarroom .footer{
+	border-top: 1px solid #eceeef;
+	text-align: center;
+	padding-top: 20px;
+	font-size: 95%;
+	font-weight: bold;
+	color: #333;
+}
+#calendarroom .modal-content{
+	width: 100%;
+	padding:20px;
+
+ }
+#calendarroom .modal-content .bt-two{
+	width: 46%;
+	font-size: 140%;
+	font-weight: bold;
+	float: left;
+	text-align: center;
+	margin: 10px 2%;
+
+ }
+#calendarroom .modal-content .close {
+	width: 35px;
+	height: 35px;
+	text-align: center;
+	position: absolute;
+	z-index: 2;
+	top: 8px;
+	right: 8px;
+ }
+#calendarroom .modal-content .angle-right{
+	position: absolute;
+	top: 45%;
+	right: 0px;
+	z-index: 2;
+	font-size: 200%;
+	background-color: transparent;
+	text-align: center;
+	vertical-align: middle;
+	outline: none; /* for Firefox Google Chrome  */
+    behavior:expression(this.onFocus=this.blur()); /* for IE */
+	display: none;
+}
+
+#calendarroom .modal-content .angle-left{
+	position: absolute;
+	top: 45%;
+	left: 0px;
+	z-index: 2;
+	font-size: 200%;
+	background-color:transparent;
+	text-align: center;
+	vertical-align: middle;
+	outline: none; /* for Firefox Google Chrome  */
+    behavior:expression(this.onFocus=this.blur()); /* for IE */display: none;
+
+}
+/* 房況月曆 end*/
+ /* light box */
+ .modal-content{
+	border-radius: 0;
+	/*min-height: 250px;*/
+	width: 80%;
+	margin: auto;
+}
+ .modal-content .head {
+ 	text-align: center;
+ 	font-weight: bold;
+ 	font-size: 110%;
+ 	border-bottom: 1px solid #eceeef;
+ 	padding-top: 15px;
+ 	padding-bottom: 15px;
+ }
+ .modal-body.one-line {
+ 	text-align: center;
+ 	color: #25c19c;
+ 	font-weight: bold;
+ 	font-size: 140%;
+ 	padding-top: 30px;
+ 	padding-bottom: 30px;
+ }
+ .modal-body.one-line.phonenumber{
+ 	text-decoration: none;
+ 	line-height: 80px;
+ }
+ .modal-body.one-line .fa {margin-right: 10px;}
+ .modal-content .modal-title {font-size: 110%; font-weight: bold; text-align: center;}
+ .modal-content .footer {border-top: 1px solid #eceeef;}
+ .modal-content .footer.bt-two .btn{
+ 	width: 49%;
+ 	background-color: #fff;
+ 	height: 60px;
+ 	font-size: 140%;
+ 	font-weight: bold;
+ }
+ .modal-content .close {
+ 	width: 50px;
+ 	height: 50px;
+ 	text-align: center;
+ 	position: absolute;
+ 	z-index: 2;
+ 	top: 0;
+ 	right: 0;
+ }
+ .modal-content .icon-phone{
+	width: 80px;
+	vertical-align: middle;
+	margin-top:10px;
+}
+ .modal-content .ps-wr {
+ 	position: relative;
+ 	border-bottom: 1px solid #eceeef ;
+ 	margin-bottom: 30px;
+ 	padding-bottom: 20px;
+ }
+ 
+ .modal-content .ps-wr .align-self-center {margin-bottom: 0;  }
+ .modal-content .ps-wr .or {
+ 	background-color: #FFF;
+	position: absolute;
+	top: -10px;
+	line-height: 20px;
+	text-align: center;
+	color: #8f8f8f;
+	width: 50%;
+	padding: 0px 8px;
+	margin:0px 25%;
+ }
+.modal-content .divider {
+	border-top: solid 1px #e0e0e0;
+	position: relative;
+	margin: 30px 0px 10px 0px;
+	padding: 10px 0px;
+}
+
+.modal-content .divider .mm-or {
+	background-color: #FFF;
+	position: absolute;
+	top: -10px;
+	line-height: 20px;
+	text-align: center;
+	color: #8f8f8f;
+	width: 10%;
+	padding: 0px 8px;
+	margin:0px 45% ;
+
+}
+/*.modal-content a.d-flex .col-xs-4,.col-xs-8{
+	padding-right: 0px;
+	padding-left: 0px;
+}*/
+ .modal-content a.d-flex{color: #3f3f3f;}
+ .modal-content .share-icon-wrap {
+ 	width: 24%;
+	margin-top:10px;
+ 	text-align: center;
+ 	display: inline-block;
+ }
+ 
+ .modal-content .share-icon-wrap img { width: 60%;}
+/* .scroll .modal-dialog{
+	height: 95%;
+	max-width: 100%;
+	margin: 10px 5px !important;
+
+}
+.scroll .modal-content{
+	height: 100%;
+	width: 100%;
+	position: relative;
+}
+.scroll .head {
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 0;
+	font-weight: bold;
+	background-color: #fff;
+	z-index: 1;
+	border-bottom: 1px solid #8C8C8C;
+	overflow: hidden;
+}
+.scroll .modal-body {
+	padding-right: 0;
+	padding-left: 0;
+	height: 100%;
+	overflow: auto;
+	overflow-x: hidden;
+	-webkit-overflow-scrolling: touch ;
+}*/
+ /* light box end*/
+  #room-lightbox .title {
+ 	text-align: left;
+ 	color:#25c19c;
+ 	padding: 20px 0;
+ 	padding-right: 30px;
+ }
+ #room-lightbox .head{border-bottom:none; padding: 0 15px; }
+ #room-lightbox .nav-tabs{
+ 	border-bottom: 1px solid #ccc;
+ 	border-top: 1px solid #ccc;
+  }
+ #room-lightbox .nav-link.active{
+ 	border-top: none;
+ 	border-left: none;
+ 	background-color:transparent;
+ 	color: #000;
+ }
+ #room-lightbox .nav-link{
+ 	border-right: solid 1px #ccc;
+ 	margin-top: 8px;
+ 	margin-bottom: 8px;
+ 	color: #9F9F9F;
+ 	padding: 15px;
+ 	font-size: 90%;
+ }
+ #room-lightbox .nav-link:hover{
+ 	border-top: none;
+ 	border-left: none;
+ 	border-bottom: none;
+ }
+ #room-lightbox .nav-item:last-child .nav-link{border-right: none;}
+ #room-lightbox .modal-body{
+ 	padding-top: 140px;
+ 	padding-left: 20px;
+ 	padding-right: 20px;
+ 	margin-bottom: 20px;
+ }
+ #room-lightbox .tab-content .tab-pane> ul {padding-left: 20px;}
+ #room-lightbox .tab-content .d-flex {margin-bottom: 0}
+ #room-lightbox .tab-content .d-flex .p-2{
+padding-bottom: 0!important;
+padding-top: 0!important;
+padding-left:0!important;
+min-width: 120px;
+font-weight: normal;
+ }
+ /* 相簿 */
+ .album-wrap .photo-wrap { width: 100%; height: auto; position: relative; margin-bottom: 0; }
+ .album-wrap .photo-wrap .figure-img{ width: 100%;margin-bottom: 0 }
+ .album-wrap .photo-wrap .figure-caption {
+ 	position: absolute;
+ 	width: 100%;
+ 	bottom: 0;
+ 	left: 0;
+ 	background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 74%, rgba(0,0,0,0.8) 100%);
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 74%,rgba(0,0,0,0.8) 100%);
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0.8) 74%,rgba(0,0,0,0.8) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#cc000000',GradientType=0 );
+    color: #fff;
+    padding: 20px;
+ }
+ .sale-list,.sale-room-wrap .content {margin:0;padding:0;}
+ .sale-room-wrap,.sale-room-wrap li {list-style: none;}
+ .sale-room{
+ 	background-color:#EEE;
+ 	color: #9D9D9D;
+ 	border-bottom:1px solid #ddd;
+ 	padding: 10px;
+ 	padding-right: 30px;
+ 	font-weight: bold;
+ 	position: relative;
+ }
+ .sale-room .fa {position: absolute; right:10px;top:50%; margin-top: -8px;}
+ .sale-room-wrap .content>li{
+ 	position: relative;
+ 	border-bottom: 1px solid #DDD;
+ 	padding:15px 10px;
+ 	padding-right: 30px;
+	background-color:#FFF
+ }
+ .sale-room-wrap .content>li a{color: #000; display: block;}
+ .sale-room-wrap .content>li .fa{
+ 	color: #25c19c;
+ 	position:absolute;
+ 	right:10px;
+ 	top: 50%;
+ 	margin-top: -10px;
+ 	font-size: 115%;
+ }
+ .like-value {text-align: center; font-weight: bold;}
+ .like-value .numerals { font-size: 220%; margin-left: 5px;margin-right: 5px; }
+ .like-stars {text-align: center; }
+ .like-stars .fa{font-size: 120%;color:#f76f25; margin-right: 3px; margin-left: 3px;}
+ .comment {border-top: 1px solid #DDD;}
+ .comment .content> li { padding-right: 10px; }
+ .comment .guest {margin-bottom: 0px;}
+ .close-wrap{
+	width: 80px;
+	height: 80px;
+	color: #fff;
+	text-align: center;
+	position: fixed;
+	z-index: 3;
+	bottom: 20px;
+	left: 50%;
+	margin-left: -30px;
+	border-radius: 50%;
+	border: none;
+	display: block;
+	background-color: rgba(0, 0, 0, 0.8) ;
+	line-height: 1;
+}
+ .icon-close {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+}
+.icon-close::before, .icon-close::after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  margin-top: -1px;
+  background: #fff;
+  height:1px;
+}
+.icon-close::before {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.icon-close::after {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+.icon-bubble {
+    width: 60px;
+    height: 41px;
+    line-height: 38px;
+    color: #fff;
+    text-align: center;
+    font-size: 18px;
+    background: url(../images/bubble.png) no-repeat;
+    background-size: 60px 41px;
+    float: left;
+    margin-right: 5px;
+}
+.title01.area{
+	margin-left: 15px;
+}
+/*燈箱4 房型詳細頁 */
+#detail .modal-dialog{
+	width: 65%;
+	margin: 100px auto;
+	
+}
+#detail .modal-content .head {
+	text-align: left;
+	padding-left: 15px;
+}
+#detail .modal-body{
+	overflow: auto;
+	height: 700px;
+}
+#detail .pricebox {text-align: left;}
+#detail .sale .pricebox {text-align: right;}
+#detail .rule{
+	/*border-top: 1px solid #CCC;*/	
+	margin: 8px 0px;
+	padding: 8px 0px 0px 0px;
+	font-size: 95%;
+	line-height: 25px;
+	
+}
+#detail .ti{
+	text-align: center;
+	color: #FFF;
+	background-color: #f37567;
+	padding: 5px 0px;
+}
+#detail .days {font-weight: 600;color: #000;font-size: 105%; margin:0px 0px 10px 0px;}
+#detail .days span{background-color: #f26a5c;color: #FFF;padding: 2px 5px;font-size: 90%; margin-right:10px;font-weight: normal;}
+#detail .card-footer{/*border-top: 1px solid #CCC;*/}
+#detail .bonus a{color: #898989;}
+#detail .bonus{margin: 10px 0px 5px 0px;padding: 5px 5px 5px 8px; background-color:#e5f6f4;font-size: 100%;}
+#detail .bonus p{
+	font-weight: normal;
+	font-weight: 600;
+	color: #000;
+	display: inline-block;margin-right:10px;
+}
+#detail .bonus span{ margin-right:10px;}
+#detail .bonus .meals{display: inline-block;font-size: 100%;}
+#detail .bonus i{
+	border-radius: 30px;
+	text-align: center;
+	border: 1px solid #1ab372;
+	height: 20px;
+	width: 20px;
+	line-height: 20px;
+	color: #1ab372;
+	background:inherit;
+	margin: 0px 8px  0px 0px;
+	font-size: 80%;
+}
+.bpic {
+	overflow: hidden;
+	position: relative;
+	height: 320px;
+	width: 100%;
+	max-width: 100%;
+	margin: auto;
+	display: block;
+}
+.bpic img {
+    transition: all 0.3s linear;
+    -webkit-backface-visibility: hidden;
+	height: 320px;
+	position: absolute;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+}
+.spic_slick{
+	display: none;
+}
+.spic{
+	margin-top: 10px;
+	background-color: #CCC;
+}
+.spic li{
+	width: 23.5%;
+	height: 100px;
+	float: left;
+	margin-right: 2%;
+	margin-bottom:10px;
+	display: block;
+	overflow: hidden;
+	position: relative;
+	
+}
+.spic li:nth-child(4n){
+	margin-right: 0px;
+	float: right;
+}
+.spic li img{
+transition: all 0.3s linear;
+    -webkit-backface-visibility: hidden;
+	height: 100px;
+	position: absolute;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+}
+#hmap .modal-content .close {
+	width: 35px;
+	height: 35px;
+	text-align: center;
+	position: absolute;
+	z-index: 2;
+	top: -0px;
+	right: -0px;
+ }
+#service_reservation .ti{
+	border-bottom: 1px solid #CCC;
+	text-align: center;
+	padding:8px 0px;
+}
+@media screen and (max-width: 768px) {
+/* 月曆 */
+#calendar .modal-dialog,#calendarroom .modal-dialog,#detail .modal-dialog{width:95%;margin:100px auto}
+.sale_in .text{float: left;width: 60%;border-right:none;}
+.sale_in li .pricebox{width: 100%;margin: 10px 0px 0px 0px;border-top: 1px solid #CCC;padding-top: 10px;}
+.sale_in li .pricebox p{margin:10px 0px 0px 0px;float: left;}
+.pleased_div{margin-top: 50px;}
+}
+@media screen and (max-width: 680px) {
+/* 月曆 */
+.modal-content{
+	width: 100%;
+	padding:0px;
+
+ }
+#calendar .modal-dialog,#myModal .modal-dialog{width:100%;margin:10px auto}
+#calendar .month-wrap {
+	width: 100%;
+	float: left;
+	margin: 0%;
+	padding-bottom:20px;
+
+}
+#calendar .modal-content{
+	width: 100%;
+	padding:10px;
+
+ }
+#calendar .footer{padding-top: 10px;}
+#calendar .modal-content .angle-left,#calendar .modal-content .angle-right{
+	display: none;
+}
+#calendar .modal-body {
+	padding: 0px;
+	height: 370px;
+	overflow: auto;
+}
+#calendar .month-title{background-color: #f5f5f5;padding: 5px 0px;}
+/* 房況月曆 */
+#calendarroom .modal-dialog{width:100%;margin:10px auto}
+#calendarroom .month-wrap {
+	width: 100%;
+	float: left;
+	margin: 0%;
+	padding-bottom:20px;
+
+}
+#calendarroom .modal-content{
+	width: 100%;
+	padding:5px;
+
+ }
+#calendarroom .footer{padding-top: 10px;}
+#calendarroom .modal-content .angle-left,#calendarroom .modal-content .angle-right{
+	display: none;
+}
+#calendarroom .modal-body {
+	padding: 0px;
+	height: 370px;
+	overflow: auto;
+}
+#calendarroom .month-title{background-color: #f5f5f5;padding: 5px 0px;}
+/* 房型詳細 */
+#detail .modal-dialog{width:100%;margin:10px auto}
+#detail .modal-body{overflow: auto;height: 470px;}
+#detail .title03{font-size: 115%;}
+.bpic,.spic {display: none;}
+.spic_slick{display: block;}
+.spic_slick li{width: 100%;height: 250px;margin-right: 0%;}
+.spic_slick li img{height: 250px;}
+
+}
+/* 登入註冊 */
+#join_member .modal-dialog,#joinoder .modal-dialog{width:40%;margin:100px auto}
+@media screen and (max-width: 768px) {
+#join_member .modal-dialog,#joinoder .modal-dialog{
+	width: 80%;
+	height: 100%;
+	margin: 100px auto;
+}
+}
+@media screen and (max-width: 640px) {
+#join_member .modal-dialog,#joinoder .modal-dialog{
+	width: 100%;
+	height: 100%;
+	margin: 20px auto;
+}
+}
+#join_member .close,#joinoder .close{
+	text-align: center;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+#join_member .close .fa-times,#joinoder .close .fa-times{
+	text-align: center;
+	position: absolute;
+	top: 10px;
+	right: 18px;
+}
+#join_member .panel-login,#joinoder .panel-login {
+	/*border-color: #ccc;
+	-webkit-box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
+	-moz-box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
+	box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);*/
+	padding: 0px 20px;
+}
+#join_member .panel-login .col_2,#joinoder .panel-login .col_2{
+	float: left;
+	width: 48%;
+	margin-right: 2%;
+	vertical-align: middle;
+}
+#join_member .panel-login .form-control,#joinoder .panel-login .form-control{
+	margin-bottom: 20px;
+}
+#join_member .panel-login>.panel-heading,#joinoder .panel-login>.panel-heading {
+	color: #00415d;
+	background-color: #fff;
+	border-color: #fff;
+	text-align: center;
+	margin: 20px 0px  20px 0px;
+}
+#join_member .panel-login>.panel-heading a,#joinoder .panel-login>.panel-heading a{
+	text-decoration: none;
+	color: #666;
+	font-weight: bold;
+	font-size: 15px;
+	-webkit-transition: all 0.1s linear;
+	-moz-transition: all 0.1s linear;
+	transition: all 0.1s linear;
+	margin: 0px 10px;
+
+}
+#join_member .panel-login>.panel-heading a.active,#joinoder .panel-login>.panel-heading a.active{
+	color: #2c529d;;
+	font-size: 18px;
+}
+#join_member .panel-login>.panel-heading hr,#joinoder .panel-login>.panel-heading hr{
+	margin-top: 10px;
+	margin-bottom: 0px;
+	clear: both;
+	border: 0;
+	height: 1px;
+	background-image: -webkit-linear-gradient(left,rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.15),rgba(0, 0, 0, 0));
+	background-image: -moz-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
+	background-image: -ms-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
+	background-image: -o-linear-gradient(left,rgba(0,0,0,0),rgba(0,0,0,0.15),rgba(0,0,0,0));
+}
+#join_member .panel-login input[type="text"],#join_member .panel-login input[type="email"],#join_member .panel-login input[type="password"] {
+	height: 45px;
+	border: 1px solid #ddd;
+	font-size: 16px;
+	-webkit-transition: all 0.1s linear;
+	-moz-transition: all 0.1s linear;
+	transition: all 0.1s linear;
+}
+#joinoder .panel-login input[type="text"],#joinoder .panel-login input[type="email"],#joinoder .panel-login input[type="password"] {
+	height: 45px;
+	border: 1px solid #ddd;
+	font-size: 16px;
+	-webkit-transition: all 0.1s linear;
+	-moz-transition: all 0.1s linear;
+	transition: all 0.1s linear;
+}
+#join_member .panel-login input:hover,
+#join_member .panel-login input:focus {
+	outline:none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	border-color: #ccc;
+}
+
+#joinoder .panel-login input:hover,
+#joinoder .panel-login input:focus {
+	outline:none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	border-color: #ccc;
+}
+
+#join_member .btn-login ,#joinoder .btn-login{
+	background-color: #2c529d;
+	outline: none;
+	color: #fff;
+	height: auto;
+	font-weight: normal;
+	padding: 10px 0;
+	margin-top:20px;
+	text-transform: uppercase;
+	border-color: #2c529d;
+}
+#join_member .btn-login:hover,
+#join_member .btn-login:focus {
+	color: #fff;
+	background-color: #0b275e;
+	border-color: #0b275e;
+}
+#joinoder .btn-login:hover,
+#joinoder .btn-login:focus {
+	color: #fff;
+		background-color: #0b275e;
+	border-color: #0b275e;
+}
+
+#join_member a.forgot-password,#joinoder a.forgot-password{
+	text-decoration: underline;
+	color: #30a3cd;
+	text-align: right;
+	width: 100%;
+	display: inline-block;
+}
+#join_member .forgot-password:hover,
+#join_member .forgot-password:focus {
+	text-decoration: underline;
+	color: #666;
+}
+#joinoder .forgot-password:hover,
+#joinoder .forgot-password:focus {
+	text-decoration: underline;
+	color: #666;
+}
+
+#join_member a.replace,#joinoder a.replace{
+	color: #666666;
+	float: left;
+	margin: 10px 0px 0px 10px;
+
+}
+#join_member .btn-register,#joinoder .btn-register {
+	background-color: #2c529d;
+	outline: none;
+	color: #fff;
+	height: auto;
+	font-weight: normal;
+	padding: 10px 0;
+	margin-top:20px;
+	text-transform: uppercase;
+	border-color: #2c529d;
+}
+#join_member .btn-register:hover,
+#join_member .btn-register:focus {
+	color: #fff;
+	background-color: #0b275e;
+	border-color: #0b275e;
+}
+#joinoder .btn-register:hover,
+#joinoder .btn-register:focus {
+	color: #fff;
+	background-color: #079460;
+	border-color: #079460;
+}
+#join_member .divider1,#joinoder .divider1{
+	border-bottom: solid 1px #e0e0e0;
+	border-top: solid 1px #e0e0e0;
+	position: relative;
+	margin: 20px 0px ;
+	padding: 10px 0px;
+}
+#join_member .divider1 .mm-or1,#joinoder .divider1 .mm-or1 {
+	background-color: #FFF;
+	position: absolute;
+	top: -10px;
+	line-height: 20px;
+	text-align: center;
+	color: #8f8f8f;
+	width: 50%;
+	padding: 0px 8px;
+	margin-right: 25%;
+	margin-left: 25%;
+	font-size: 90%;
+}
+#join_member .relative,#joinoder .relative{position:relative;}
+#join_member .btstyle,#joinoder .btstyle{
+	font-size: 14px;
+	line-height: 40px;
+	font-weight: bold;
+	color: #FFF;
+	text-align: center;
+	height: 40px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+	border: none;
+	width: 100%;
+	margin: 10px 0px;
+	display: block;
+	text-decoration: none;
+	cursor: pointer;
+}
+/*#join_member .btstyle:hover,#join_member .btstyle:active,#join_member .btstyle:focus{opacity:0.8;}*/
+#join_member .loginbtn01,#joinoder .loginbtn01{background-color: #25c19c;}
+#join_member .loginbtn02,#joinoder .loginbtn02{/*background-color: #4d669b;*/color: #4d669b;border: 1px solid #4d669b;}
+#join_member .loginbtn02:hover,#joinoder .loginbtn02:hover{background-color: #4d669b;color: #ffffff;}
+#join_member .loginbtn03,#joinoder .loginbtn03{/*background-color: #da624e;*/color: #da624e;border: 1px solid #da624e;}
+#join_member .loginbtn03:hover,#joinoder .loginbtn03:hover{background-color: #da624e;color: #ffffff;}
+#join_member .loginbtn04,#joinoder .loginbtn04{/*background-color: #37b837;*/color: #37b837;border: 1px solid #37b837;}
+#join_member .loginbtn04:hover,#joinoder .loginbtn04:hover{background-color: #37b837;color: #ffffff;}
+#join_member .loginbtn05,#joinoder .loginbtn05{background-color: #f18043;}
+#join_member .other_link .fa,#joinoder .other_link .fa{
+	font-size: 180%;
+	/*float: left;*/
+	/*border-right: 1px solid hsla(0,0%,100%,.2);*/
+	/*margin: 8px 0px 0px 10px;*/
+	padding-right: 8px;
+	vertical-align: middle;
+}
+#join_member .other_link .line,#joinoder .other_link .line{
+	padding-right: 8px;
+	/*border-right:1px solid hsla(0,0%,100%,.2);*/
+	
+}
+#join_member .other_link .line img,#joinoder .other_link .line img{
+	vertical-align: middle;
+height: 40px;
+	width: 40px;}
+#join_member .other_link li,#joinoder .other_link li{
+	float: left;
+	width: 32%;
+	margin-right: 2%;
+	line-height: 40px;
+	vertical-align: middle;
+}
+#join_member .other_link li:nth-child(3n),#joinoder .other_link li:nth-child(3n){margin-right: 0%;float: right;}
+#join_member .other_link :hover,#joinoder .other_link :hover{
+	color: #FFF;
+}
+/* 登入註冊 end*/

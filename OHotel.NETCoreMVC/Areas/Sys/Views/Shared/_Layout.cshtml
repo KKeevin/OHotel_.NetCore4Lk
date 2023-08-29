@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]特斯德飯店後端管理</title>
+    @* ------------------ NEW ADD ------------------ *@
+    <script src="https://kit.fontawesome.com/f9115293c8.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/main.css" asp-append-version="true" />
+    @* --------------------------------------------- *@
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <partial name="_Header" />
+    <div class="app sidebar-mini rtl" id="LayoutVue">
+        <aside class="app-sidebar">
+            <ul class="app-menu">
+                <li>
+                    <a class="app-menu__item active" asp-area="Sys" asp-controller="Welcome" asp-action="Index">
+                        <i class="app-menu__icon fa fa-home"></i><span class="app-menu__label">HOME</span>
+                    </a>
+                </li>
+                <li v-for="(items, category) in ManageClassData" :key="category" class="treeview"
+                    :class="{'is-expanded': items[0].MCXtrol === currentController}">
+                    <a class="app-menu__item" href="#" data-toggle="treeview" :data-controller="items[0].MCXtrol"
+                       @@click.prevent="expand(items[0].MCXtrol)">
+                        <i class="app-menu__icon" :class="items[0].MCIcon"></i>
+                        <span class="app-menu__label">{{ category }}</span>
+                        <i class="treeview-indicator fa fa-angle-right"></i>
+                    </a>
+                    <ul id="treeview" class="treeview-menu">
+                        <li v-for="item in items" :key="item.MCNo">
+                            <a class="treeview-item" :href="'/Sys/' + item.MCXtrol + '/' + item.MIAction" :data-action="item.MIAction"
+                               :class="{'active': isMenuItemActive(item)}">
+                                <i class="icon fa fa-circle-o"></i>
+                                {{ item.ItemName }}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+        </aside>
+    </div>
+    <div role="main" class="pb-3">
+        @RenderBody()
+    </div>
+    <footer><div class="site-footer">Copyright (C)2019</div></footer>
+    <!-- Essential frameworks for application to work -->
+    <script src="~/lib/vue/vue.global.prod.js"></script>
+    <script src="~/lib/axios/axios.min.js"></script>
+    <!-- Essential Styles for application to work -->
+    <script src="~/lib/jquery/dist/jquery-3.2.1.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap_origin.min.js"></script>
+    <!-- Customized JavaScript -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/vue_web.js" asp-append-version="true"></script>
+    @* ----------- 渲染頁面JS ----------- *@
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

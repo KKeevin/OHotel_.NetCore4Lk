@@ -1,0 +1,137 @@
+﻿<div class="pheight"></div>
+<div id="vuevue00">
+    <div class="abgne_tab">
+        <ul class="tabs">
+            <li class="active"><a href="#tab1">活動訊息</a></li>
+            <li class=""><a href="#tab2">賓利的日常</a></li>
+        </ul>
+        <div id="news">
+            <div class="tab_container">
+                <ul id="tab1" class="tab_content clearfix" style="display: none;">
+                    <li>
+                        <a href="news_detail.aspx?No=3" title="免費『隨身酒精攜帶瓶』送給您~">
+                            <div class="newsimg"><img src="https://bentley-hotel.com.tw/Upload/picture/b/9_1_20220922222655_2.JPG" alt="免費『隨身酒精攜帶瓶』送給您~"></div><p class="ti">免費『隨身酒精攜帶瓶』送給您~</p><span class="text">
+                                安全無虞的住宿及用餐空間
+
+                                賓利酒店全體員工每日消毒館內環境
+
+                                ...
+                            </span><span class="newsitem">活動訊息</span><p class="newsday">2022-09-22</p>
+                        </a>
+                    </li>
+                </ul><ul id="tab2" class="tab_content clearfix" style="display: block;">
+                    <li>
+                        <a href="news_detail.aspx?No=1" title="賀！學生們要遠征墨西哥為國爭光了～">
+                            <div class="newsimg"><img src="https://bentley-hotel.com.tw/Upload/picture/b/9_1_20220922220443_2.jpg" alt="賀！學生們要遠征墨西哥為國爭光了～"></div><p class="ti">賀！學生們要遠征墨西哥為國爭光了～</p><span class="text">
+                                學生們要遠征墨西哥為國爭光了
+
+                                2022年第5屆世界盃青少棒錦標賽
+                                ...
+                            </span><span class="newsitem">賓利的日常</span><p class="newsday">2022-08-02</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="news_detail.aspx?No=5" title="☆桃園市政府商圈友善店家頒獎☆">
+                            <div class="newsimg"><img src="https://bentley-hotel.com.tw/Upload/picture/b/9_1_20221110174224_3.jpg" alt="☆桃園市政府商圈友善店家頒獎☆"></div><p class="ti">☆桃園市政府商圈友善店家頒獎☆</p><span class="text">
+                                &nbsp; 桃園市政府商圈友善店家頒獎～&nbsp;
+
+                                非常榮幸獲...
+                            </span><span class="newsitem">賓利的日常</span><p class="newsday">2022-11-10</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts{
+    <script>
+        //登入註冊
+        $(function () {
+            $('#login-form-link').click(function (e) {
+                $("#login-form").delay(100).fadeIn(100);
+                $("#register-form").fadeOut(100);
+                $('#register-form-link').removeClass('active');
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+            $('#register-form-link').click(function (e) {
+                $("#register-form").delay(100).fadeIn(100);
+                $("#login-form").fadeOut(100);
+                $('#login-form-link').removeClass('active');
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+
+        });
+        $('.carousel').carousel({
+            interval: false
+        })
+        $('#myModal').on('shown.bs.modal', function () {
+            $('#myInput').focus()
+        })
+
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "100%";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+        $(window).resize(function () {
+            var w = $(this).width();
+            if (w > 1024) {
+
+                $("#mySidenav").css("width", "100%");
+            } else {
+
+                $("#mySidenav").css("width", "0");
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#head-carousel').slick({
+                dots: true,
+                infinite: true,
+                speed: 500,
+                autoplay: true,
+                fade: true,
+                arrows: false,
+                cssEase: 'linear'
+            });
+            $('.roomslick').slick({
+                dots: true,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 1,
+                adaptiveHeight: true, arrows: false,
+                cssEase: 'linear',
+            });
+            $('.single-item').slick();
+        });
+        $(function () {
+            $("#tt").click(function () {
+                $("#OPEN").addClass("animated fadeInRightBig floatLeft");
+            })
+        });
+    </script>
+    <script src="~/js/fp/scrollReveal.js"></script>
+    <script>
+        $(function () {
+            var config = {
+                reset: false,
+                mobile: false,
+                delay: 'onload'
+            }
+            window.sr = new scrollReveal(config);
+        });
+    </script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({ pageLanguage: 'zh-TW', includedLanguages: 'en,ja,zh-CN,zh-TW', layout: google.translate.TranslateElement.InlineLayout.SIMPLE }, 'google_translate_element');
+        }
+    </script>
+}
