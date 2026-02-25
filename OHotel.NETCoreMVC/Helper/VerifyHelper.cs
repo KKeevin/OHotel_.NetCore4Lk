@@ -1,4 +1,4 @@
-﻿using EasyCLib.NET.Sdk;
+using EasyCLib.NET.Sdk;
 using System.Security.Cryptography;
 using OHotel.NETCoreMVC.Models;
 using System.Text.RegularExpressions;
@@ -11,7 +11,6 @@ namespace OHotel.NETCoreMVC.Helper
         public readonly IEncryptDecrypt _IEncryptDecrypt;
         public readonly IToolsCLib _ToolsCLib;
         private readonly IConfiguration _Configuration;
-        private string Sql = "";
         public VerifyHelper(IDbFunction dbFunction, IEncryptDecrypt encryptDecrypt, IToolsCLib toolsCLib, IConfiguration configuration)
         {
             _IDbFunction = dbFunction;
@@ -22,148 +21,135 @@ namespace OHotel.NETCoreMVC.Helper
         /// <summary>
         /// 防止SQL非法注入
         /// </summary>
-        public string SanitizeInput(string input)
+        public string SanitizeInput(string? input)
         {
-            // 移除非法字符以防止SQL注入
-            string sanitizedInput = Regex.Replace(input, @"[^\p{L}\p{N}_.-]", "", RegexOptions.None);
-
-            return sanitizedInput;
+            if (string.IsNullOrEmpty(input)) return string.Empty;
+            return Regex.Replace(input, @"[^\p{L}\p{N}_.-]", "", RegexOptions.None);
         }
 
         /// <summary>
-        /// 驗證JWT Partner 身分有效性
+        /// 驗證JWT Partner 身分有效性（使用參數化查詢防止 SQL 注入）
         /// </summary>
-        /// <param name="APICODE"></param>
-        /// <returns></returns>
         public async Task<StatusMessage> VerifyJwtPartner(string PID)
         {
-            StatusMessage _Status = new StatusMessage();
-
-            if (String.IsNullOrEmpty(PID))
+            var status = new StatusMessage();
+            if (string.IsNullOrEmpty(PID))
             {
-                _Status.Status = "ERROR";
-                _Status.Message = "錯誤#HV1001:PartnerID錯誤!";
-                return _Status;
+                status.Status = "ERROR";
+                status.Message = "錯誤#HV1001:PartnerID錯誤!";
+                return status;
             }
-            //--取得 PID 相關訊息
+            if (!int.TryParse(PID, out _))
+            {
+                status.Status = "ERROR";
+                status.Message = "錯誤#HV1001:PartnerID格式錯誤!";
+                return status;
+            }
             try
             {
-                await Task.Run(() =>
+                var connStr = _Configuration.GetConnectionString("SQLCD_Read_OHotel")
+                    ?? throw new InvalidOperationException("Connection string not found.");
+                _IDbFunction.DbConnect(connStr);
+                var found = _IDbFunction.SelectDbDataViewWithParams(
+                    "SELECT STName FROM Staff WHERE State=0 AND STNo=@STNo",
+                    "STName",
+                    new Dictionary<string, object> { ["@STNo"] = PID });
+                _IDbFunction.DbClose();
+                if (!found || _IDbFunction.SqlDataView.Count < 1)
                 {
-                    //取得合作夥伴 PID
-                    Sql = "select STName from Staff where State=0 and STNo='" + PID + "'";
-                    if (_IDbFunction.SelectDbDataView(Sql, "STName") && _IDbFunction.SqlDataView.Count < 1)
-                    {
-                        _Status.Status = "ERROR";
-                        _Status.Message = "錯誤#HV1002: PartnerID Not Allowed!";
-                    }
-                    _IDbFunction.SqlDataView.Dispose();
-
-                });
+                    status.Status = "ERROR";
+                    status.Message = "錯誤#HV1002: PartnerID Not Allowed!";
+                    return status;
+                }
             }
-            catch { }
-            ///--如已經不存在該名單 回傳錯誤
-            if (_Status.Status == "ERROR")
+            catch
             {
-                return _Status;
+                status.Status = "ERROR";
+                status.Message = "錯誤#HV1002: PartnerID Not Allowed!";
+                return status;
             }
-            _Status.Status = "SUCCESS";
-            _Status.Message = "成功!";
-            return _Status;
+            status.Status = "SUCCESS";
+            status.Message = "成功!";
+            return await Task.FromResult(status);
         }
         /// <summary>
-        /// 驗證後端使用者編號是否還可使用
+        /// 驗證後端使用者編號是否還可使用（使用參數化查詢防止 SQL 注入）
         /// </summary>
-        /// <param name="MgrId"></param>
-        /// <returns></returns>
-
         public async Task<MgrUseredItemPower> VerifyJwtMgr(string ItemId, string MgrId)
         {
-            //--設定連線
-            _IDbFunction.DbConnect(_Configuration.GetConnectionString("SQLCD_Read_OHotel"));
-            MgrUseredItemPower _UseredItemPower = new MgrUseredItemPower();
-            ItemId = _ToolsCLib.SpecialChar(ItemId);//執行項目編號
-            MgrId = _ToolsCLib.SpecialChar(MgrId);//使用者編號
-            if (String.IsNullOrEmpty(MgrId))
+            var result = new MgrUseredItemPower();
+            ItemId = _ToolsCLib.SpecialChar(ItemId);
+            MgrId = _ToolsCLib.SpecialChar(MgrId);
+            if (string.IsNullOrEmpty(MgrId))
             {
-                _UseredItemPower.Status = "ERROR";
-                _UseredItemPower.Message = "錯誤#HV2001:ItemId or MgrId ERROR!";
-                return _UseredItemPower;
+                result.Status = "ERROR";
+                result.Message = "錯誤#HV2001:ItemId or MgrId ERROR!";
+                return result;
             }
-            //--取得 SUID 相關訊息
+            if (!int.TryParse(MgrId, out _) || (!string.IsNullOrEmpty(ItemId) && !int.TryParse(ItemId, out _)))
+            {
+                result.Status = "ERROR";
+                result.Message = "錯誤#HV2001:ItemId or MgrId 格式錯誤!";
+                return result;
+            }
+            var connStr = _Configuration.GetConnectionString("SQLCD_Read_OHotel")
+                ?? throw new InvalidOperationException("Connection string 'SQLCD_Read_OHotel' not found.");
+            _IDbFunction.DbConnect(connStr);
             try
             {
-                await Task.Run(() =>
+                var staffParams = new Dictionary<string, object> { ["@MgrId"] = MgrId };
+                if (!_IDbFunction.SelectDbDataViewWithParams("SELECT * FROM Staff WHERE State=0 AND STNo=@MgrId", "Staff", staffParams) || _IDbFunction.SqlDataView.Count < 1)
                 {
-                    //確認後端管理者可使用
-                    Sql = "select * from Staff ";
-                    Sql += " where State=0 and STNo='" + MgrId + "'";
-                    if (_IDbFunction.SelectDbDataView(Sql, "Staff") && _IDbFunction.SqlDataView.Count < 1)
+                    result.Status = "ERROR";
+                    result.Message = "錯誤#HV2002: MgrId Not Allowed!";
+                    return result;
+                }
+                var r = _IDbFunction.SqlDataView[0];
+                result.MgrUserId = r["STNo"]?.ToString() ?? "";
+                result.MgrUserName = r["STName"]?.ToString() ?? "";
+                result.MgrUserLoginTime = r["LoginTime"] != DBNull.Value ? Convert.ToDateTime(r["LoginTime"]).ToString("yyyy-MM-dd HH:mm:ss") : "";
+                result.MgrUserAllPower = Convert.ToInt16(r["AllPower"]);
+                result.MgrUserCTime = r["CTime"] != DBNull.Value ? Convert.ToDateTime(r["CTime"]).ToString("yyyy-MM-dd HH:mm:ss") : "";
+                result.MgrUserMTime = r["MTime"] != DBNull.Value ? Convert.ToDateTime(r["MTime"]).ToString("yyyy-MM-dd HH:mm:ss") : "";
+                result.Status = "SUCCESS";
+                result.Message = "成功!";
+                if (result.MgrUserAllPower == 1)
+                {
+                    result.MgrUserPowerList ??= new List<MgrUsersPower>();
+                    result.MgrUserPowerList.Add(new MgrUsersPower { MgrUserId = MgrId, MgrItemId = ItemId, MgrPV = 1, MgrPA = 1, MgrPD = 1, MgrPU = 1, MgrPG = 1, MgrP1 = 1, MgrP2 = 1 });
+                }
+                else if (!string.IsNullOrEmpty(ItemId))
+                {
+                    var powerParams = new Dictionary<string, object> { ["@MgrId"] = MgrId, ["@ItemId"] = ItemId };
+                    if (_IDbFunction.SelectDbDataViewWithParams("SELECT * FROM StaffPower WHERE STNo=@MgrId AND MINo=@ItemId", "StaffPower", powerParams) && _IDbFunction.SqlDataView.Count > 0)
                     {
-                        _UseredItemPower.Status = "ERROR";
-                        _UseredItemPower.Message = "錯誤#HV2002: MgrId Not Allowed!";
-                    }
-                    else
-                    {
-                        string? STNo = _IDbFunction.SqlDataView[0]["STNo"].ToString() ?? "";
-                        string? STName = _IDbFunction.SqlDataView[0]["STName"].ToString() ?? "";
-                        string? LoginTime = (_IDbFunction.SqlDataView[0]["LoginTime"] != DBNull.Value ? Convert.ToDateTime(_IDbFunction.SqlDataView[0]["LoginTime"]).ToString("yyyy-MM-dd HH:mm:ss") : "") ?? "";
-                        int AllPower = Convert.ToInt16(_IDbFunction.SqlDataView[0]["AllPower"]);//最高權限者
-                        string? CTime = (_IDbFunction.SqlDataView[0]["CTime"] != DBNull.Value ? Convert.ToDateTime(_IDbFunction.SqlDataView[0]["CTime"]).ToString("yyyy-MM-dd HH:mm:ss") : "");
-                        string? MTime = (_IDbFunction.SqlDataView[0]["MTime"] != DBNull.Value ? Convert.ToDateTime(_IDbFunction.SqlDataView[0]["MTime"]).ToString("yyyy-MM-dd HH:mm:ss") : "");
-                        _UseredItemPower.Status = "SUCCESS";
-                        _UseredItemPower.Message = "成功!";
-                        _UseredItemPower.MgrUserId = STNo;
-                        _UseredItemPower.MgrUserName = STName;
-                        _UseredItemPower.MgrUserAllPower = AllPower;
-                        _UseredItemPower.MgrUserLoginTime = LoginTime;
-                        _UseredItemPower.MgrUserCTime = CTime;
-                        _UseredItemPower.MgrUserMTime = MTime;
-                        ///最高權限者 項目權限都可使用
-                        if (AllPower == 1)
+                        var p = _IDbFunction.SqlDataView[0];
+                        result.MgrUserPowerList ??= new List<MgrUsersPower>();
+                        result.MgrUserPowerList.Add(new MgrUsersPower
                         {
-                            _UseredItemPower.MgrUserPowerList?.Add(new MgrUsersPower()
-                            {
-                                MgrUserId = MgrId,
-                                MgrItemId = ItemId,
-                                MgrPV = 1,
-                                MgrPA = 1,
-                                MgrPD = 1,
-                                MgrPU = 1,
-                                MgrPG = 1,
-                                MgrP1 = 1,
-                                MgrP2 = 1,
-                            });
-                        }
-                        else
-                        {
-
-                            ///--取得該使用者該項目的權限
-                            Sql = "select * from StaffPower where STNo='" + MgrId + "' and MINo='" + ItemId + "'";
-                            if (_IDbFunction.SelectDbReader(Sql) && _IDbFunction.SqlServerReader.Read())
-                            {
-                                _UseredItemPower.MgrUserPowerList?.Add(new MgrUsersPower()
-                                {
-                                    MgrUserId = MgrId,
-                                    MgrItemId = ItemId,
-                                    MgrPV = Convert.ToInt16(_IDbFunction.SqlServerReader["PV"]),
-                                    MgrPA = Convert.ToInt16(_IDbFunction.SqlServerReader["PA"]),
-                                    MgrPD = Convert.ToInt16(_IDbFunction.SqlServerReader["PD"]),
-                                    MgrPU = Convert.ToInt16(_IDbFunction.SqlServerReader["PU"]),
-                                    MgrPG = Convert.ToInt16(_IDbFunction.SqlServerReader["PG"]),
-                                    MgrP1 = Convert.ToInt16(_IDbFunction.SqlServerReader["P1"]),
-                                    MgrP2 = Convert.ToInt16(_IDbFunction.SqlServerReader["P2"]),
-                                });
-                            }
-                            _IDbFunction.SqlServerReader.Close();
-                        }
+                            MgrUserId = MgrId,
+                            MgrItemId = ItemId,
+                            MgrPV = Convert.ToInt16(p["PV"]),
+                            MgrPA = Convert.ToInt16(p["PA"]),
+                            MgrPD = Convert.ToInt16(p["PD"]),
+                            MgrPU = Convert.ToInt16(p["PU"]),
+                            MgrPG = Convert.ToInt16(p["PG"]),
+                            MgrP1 = Convert.ToInt16(p["P1"]),
+                            MgrP2 = Convert.ToInt16(p["P2"])
+                        });
                     }
-                    _IDbFunction.SqlDataView.Dispose();
-                });
+                }
             }
-            catch { }
-            _IDbFunction.DbClose();
-            return _UseredItemPower;
+            catch
+            {
+                result.Status = "ERROR";
+                result.Message = "錯誤#HV2002: MgrId Not Allowed!";
+            }
+            finally
+            {
+                _IDbFunction.DbClose();
+            }
+            return await Task.FromResult(result);
         }
     }
 }

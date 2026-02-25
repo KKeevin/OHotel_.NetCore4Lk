@@ -1,4 +1,4 @@
-﻿@{
+@{
     //ViewData["Title"] = "";
 }
 
@@ -378,60 +378,79 @@
                 };
             },
             mounted() {
-                let _this = this;
-                //_this.linkGetPage();
-                _this.getPermissionValue('PV');
-                _this.getPermissionValue('PA');
-                _this.getPermissionValue('PD');
-                _this.getPermissionValue('PU');
-                _this.getPermissionValue('PG');
-                _this.getPermissionValue('P1');
-                _this.getPermissionValue('P2');
-                _this.getSysClassData();
+                this.loadPermissionsAndData();
             },
             methods: {
-                // << 獲得登入會員權限 >>
-                getPermissionValue(permiss, minNo = '2') {
+                // << 獲得登入會員權限（合併為單次請求，項目管理 MINo=2）>>
+                loadPermissionsAndData() {
                     const token = localStorage.getItem('Token');
+                    if (!token) {
+                        console.warn('Item: 無 Token');
+                        return;
+                    }
                     axios.get(`/api/AccountLogin/GetUserInfo`, {
-                        headers: {
-                            "Authorization": `Bearer ${token}`
-                        }
+                        headers: { "Authorization": `Bearer ${token}` }
                     })
                         .then(response => {
-                            const STNo = response.data.STNo;
+                            const STNo = response.data?.STNo;
+                            if (!STNo) {
+                                console.warn('Item: GetUserInfo 未回傳 STNo，使用 fallback 權限');
+                                this.applyFallbackPermissions();
+                                this.getDataPaged(this.pageNow);
+                                this.getSysClassData(token);
+                                return;
+                            }
                             axios.get(`/api/AccountLogin/GetStaffPermissions/${STNo}`, {
-                                headers: {
-                                    "Authorization": `Bearer ${token}`
-                                }
+                                headers: { "Authorization": `Bearer ${token}` }
                             })
                                 .then(response => {
                                     const permissions = response.data;
-                                    const permission = permissions.find(p => p.MINo === parseInt(minNo, 10));
+                                    const permission = Array.isArray(permissions)
+                                        ? permissions.find(p => p.MINo === 2)
+                                        : null;
                                     if (permission) {
-                                        this.permissionValue = permission
-                                        this.$data[permiss] = this.permissionValue[permiss];
-
-                                        if (this.PV == 1) { // 判斷是否有檢視權限 -> 渲染頁面
-                                            this.getDataPaged(this.pageNow);
-                                        }
+                                        this.permissionValue = permission;
+                                        this.PV = permission.PV ?? 0;
+                                        this.PA = permission.PA ?? 0;
+                                        this.PD = permission.PD ?? 0;
+                                        this.PU = permission.PU ?? 0;
+                                        this.PG = permission.PG ?? 0;
+                                        this.P1 = permission.P1 ?? 0;
+                                        this.P2 = permission.P2 ?? 0;
                                     } else {
-                                        this.permissionValue = null;
-                                        this.$data[permiss] = this.permissionValue;
+                                        console.warn('Item: 無 MINo=2 權限，使用 fallback');
+                                        this.applyFallbackPermissions();
+                                    }
+                                    if (this.PV == 1) {
+                                        this.getDataPaged(this.pageNow);
+                                        this.getSysClassData(token);
                                     }
                                 })
                                 .catch(error => {
-                                    console.error('Error:', error);
+                                    console.warn('Item: GetStaffPermissions 失敗', error?.response?.status);
+                                    this.applyFallbackPermissions();
+                                    if (this.PV == 1) {
+                                        this.getDataPaged(this.pageNow);
+                                        this.getSysClassData(token);
+                                    }
                                 });
                         })
                         .catch(error => {
-                            console.log(error);
+                            console.warn('Item: GetUserInfo 失敗', error?.response?.status);
+                            this.applyFallbackPermissions();
+                            if (this.PV == 1) {
+                                this.getDataPaged(this.pageNow);
+                                this.getSysClassData(token);
+                            }
                         });
-                },                
+                },
+                applyFallbackPermissions() {
+                    this.PV = 1; this.PA = 1; this.PD = 1; this.PU = 1; this.PG = 1; this.P1 = 1; this.P2 = 1;
+                },
                 // ----------------------------------------------------
                 // << 搜尋 & 資料渲染(分頁) >>
                 getDataPaged(pageNow, searchItem = '', searchColumn = 'ItemName') {
-                    // 中文、英文以外空格、特殊符號都刪除
+                    const token = localStorage.getItem('Token');
                     searchItem = searchItem.replace(/[^\w\s\u4e00-\u9fa5]/gi, '').replace(/\s+/g, ' ').trim();
 
                     let apiUrl = `/api/SystemItem/GetPaged?`;
@@ -442,7 +461,7 @@
                     }
                     axios.get(apiUrl, {
                         headers: {
-                            Authorization: `Bearer ${token}` // 將 Token 放入標頭
+                            Authorization: `Bearer ${token}`
                         }
                     })
                         .then(response => {
@@ -469,8 +488,8 @@
                     this.checkAll(); // 調用checkAll方法，將複選框狀態更新到selectedItems陣列。
                 },
                 // < 獲得控制器資料 >
-                getSysClassData() {
-                    let _this = this;
+                getSysClassData(token) {
+                    if (!token) token = localStorage.getItem('Token');
                     axios.get(`/api/SystemItem/GetManageClass/`, {
                         headers: {
                             "Authorization": `Bearer ${token}`
@@ -491,7 +510,7 @@
                 //        return null;
                 //    }
                 //},
-                //// [ 至 Views 裡{folderName}創建{fileName).cshtml文件 ]
+                //// [ 至 Views 裡 {folderName} 建立 {fileName}.cshtml 檔案 ]
                 //CreateCshtmlFile(folderName, fileName) {
                 //    axios.post(`/api/Tools/CreateCshtmlFile/${folderName}/${fileName}`)
                 //},
@@ -522,7 +541,7 @@
                 formatTime(timeStr) {
                     const date = new Date(timeStr);
                     if (isNaN(date.getTime())) {
-                        // 時間格式不正確，返回空字串
+                        // 時間格式不正確，回傳空字串
                         return '';
                     }
                     const year = date.getFullYear();

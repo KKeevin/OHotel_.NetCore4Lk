@@ -1,4 +1,4 @@
-﻿/*----------------- Main Declaration -----------------*/
+/*----------------- Main Declaration -----------------*/
 const webApiBaseAddress = "https://localhost:7015";
 
 /*----------------------------------------------------*/
@@ -357,7 +357,7 @@ const ClassVue = Vue.createApp({
         CreateFolder(folderName) {
             axios.post(`/api/Tools/CreateFolder/${folderName}`)
         },
-        // [ 創建`{folderName}Controller.cs`至 Controllers 裡 ]
+        // [ 建立 `{folderName}Controller.cs` 至 Controllers 裡 ]
         CreateControllerFile(folderName) {
             axios.post(`/api/Tools/CreateControllerFile/${folderName}`)
         },
@@ -398,7 +398,7 @@ const ClassVue = Vue.createApp({
         formatTime(timeStr) {
             const date = new Date(timeStr);
             if (isNaN(date.getTime())) {
-                // 時間格式不正確，返回空字串
+                // 時間格式不正確，回傳空字串
                 return '';
             }
             const year = date.getFullYear();
@@ -720,7 +720,7 @@ const ItemVue = Vue.createApp({
             this.checkAll(); // 調用checkAll方法，將複選框狀態更新到selectedItems陣列。
         },
         // --------------------------- 新刪修 資料夾/檔案 ----------------------------------
-        // [ 至 Views 裡{folderName}創建{fileName).cshtml文件 ]
+        // [ 至 Views 裡 {folderName} 建立 {fileName}.cshtml 檔案 ]
         CreateCshtmlFile(folderName, fileName) {
             axios.post(`/api/Tools/CreateCshtmlFile/${folderName}/${fileName}`)
         },
@@ -751,7 +751,7 @@ const ItemVue = Vue.createApp({
         formatTime(timeStr) {
             const date = new Date(timeStr);
             if (isNaN(date.getTime())) {
-                // 時間格式不正確，返回空字串
+                // 時間格式不正確，回傳空字串
                 return '';
             }
             const year = date.getFullYear();
@@ -1079,7 +1079,7 @@ const HotelInfoVue = Vue.createApp({
         formatTime(timeStr) {
             const date = new Date(timeStr);
             if (isNaN(date.getTime())) {
-                // 時間格式不正確，返回空字串
+                // 時間格式不正確，回傳空字串
                 return '';
             }
             const year = date.getFullYear();
@@ -1341,7 +1341,7 @@ const StaffVue = Vue.createApp({
         formatTime(timeStr) {
             const date = new Date(timeStr);
             if (isNaN(date.getTime())) {
-                // 時間格式不正確，返回空字串
+                // 時間格式不正確，回傳空字串
                 return '';
             }
             const year = date.getFullYear();

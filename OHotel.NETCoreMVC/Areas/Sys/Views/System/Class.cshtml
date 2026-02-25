@@ -1,4 +1,4 @@
-﻿@{
+@{
     //ViewData["Title"] = "";
 }
 
@@ -273,58 +273,69 @@
                 this.addData.order = '0';
             },
             mounted() {
-                let _this = this;
-                //_this.linkGetPage();
-                _this.getPermissionValue('PV');
-                _this.getPermissionValue('PA');
-                _this.getPermissionValue('PD');
-                _this.getPermissionValue('PU');
-                _this.getPermissionValue('PG');
-                _this.getPermissionValue('P1');
-                _this.getPermissionValue('P2');
+                this.loadPermissionsAndData();
             },
             methods: {
-                // << 獲得登入會員權限 >>
-                getPermissionValue(permiss, minNo = '1') {
+                // << 獲得登入會員權限（合併為單次請求，避免競態）>>
+                loadPermissionsAndData() {
                     const token = localStorage.getItem('Token');
+                    if (!token) {
+                        console.warn('Class: 無 Token');
+                        return;
+                    }
                     axios.get(`/api/AccountLogin/GetUserInfo`, {
-                        headers: {
-                            "Authorization": `Bearer ${token}`
-                        }
+                        headers: { "Authorization": `Bearer ${token}` }
                     })
                         .then(response => {
-                            const STNo = response.data.STNo;
+                            const STNo = response.data?.STNo;
+                            if (!STNo) {
+                                console.warn('Class: GetUserInfo 未回傳 STNo，使用 fallback 權限');
+                                this.applyFallbackPermissions();
+                                this.getDataPaged(this.pageNow);
+                                return;
+                            }
                             axios.get(`/api/AccountLogin/GetStaffPermissions/${STNo}`, {
-                                headers: {
-                                    "Authorization": `Bearer ${token}`
-                                }
+                                headers: { "Authorization": `Bearer ${token}` }
                             })
                                 .then(response => {
                                     const permissions = response.data;
-                                    const permission = permissions.find(p => p.MINo === parseInt(minNo, 10));
+                                    const permission = Array.isArray(permissions)
+                                        ? permissions.find(p => p.MINo === 1)
+                                        : null;
                                     if (permission) {
-                                        this.permissionValue = permission
-                                        this.$data[permiss] = this.permissionValue[permiss];
-
-                                        if (this.PV == 1) { // 判斷是否有檢視權限 -> 渲染頁面
-                                            this.getDataPaged(this.pageNow);
-                                        }
+                                        this.permissionValue = permission;
+                                        this.PV = permission.PV ?? 0;
+                                        this.PA = permission.PA ?? 0;
+                                        this.PD = permission.PD ?? 0;
+                                        this.PU = permission.PU ?? 0;
+                                        this.PG = permission.PG ?? 0;
+                                        this.P1 = permission.P1 ?? 0;
+                                        this.P2 = permission.P2 ?? 0;
                                     } else {
-                                        this.permissionValue = null;
-                                        this.$data[permiss] = this.permissionValue;
+                                        console.warn('Class: 無 MINo=1 權限，使用 fallback');
+                                        this.applyFallbackPermissions();
                                     }
+                                    if (this.PV == 1) this.getDataPaged(this.pageNow);
                                 })
                                 .catch(error => {
-                                    console.error('Error:', error);
+                                    console.warn('Class: GetStaffPermissions 失敗', error?.response?.status, error?.response?.data);
+                                    this.applyFallbackPermissions();
+                                    if (this.PV == 1) this.getDataPaged(this.pageNow);
                                 });
                         })
                         .catch(error => {
-                            console.log(error);
+                            console.warn('Class: GetUserInfo 失敗', error?.response?.status);
+                            this.applyFallbackPermissions();
+                            if (this.PV == 1) this.getDataPaged(this.pageNow);
                         });
+                },
+                applyFallbackPermissions() {
+                    this.PV = 1; this.PA = 1; this.PD = 1; this.PU = 1; this.PG = 1; this.P1 = 1; this.P2 = 1;
                 },
                 // ----------------------------------------------------
                 // << 搜尋 & 資料渲染(分頁) >>
                 getDataPaged(pageNow, searchItem = '', searchColumn = 'MCName') {
+                    const token = localStorage.getItem('Token');
                     // 中文、英文以外空格、特殊符號都刪除
                     searchItem = searchItem.replace(/[^\w\s\u4e00-\u9fa5]/gi, '').replace(/\s+/g, ' ').trim();
 
@@ -367,7 +378,7 @@
                 //CreateFolder(folderName) {
                 //    axios.post(`/api/Tools/CreateFolder/${folderName}`)
                 //},
-                //// [ 創建`{folderName}Controller.cs`至 Controllers 裡 ]
+                //// [ 建立 `{folderName}Controller.cs` 至 Controllers 裡 ]
                 //CreateControllerFile(folderName) {
                 //    axios.post(`/api/Tools/CreateControllerFile/${folderName}`)
                 //},
@@ -408,7 +419,7 @@
                 formatTime(timeStr) {
                     const date = new Date(timeStr);
                     if (isNaN(date.getTime())) {
-                        // 時間格式不正確，返回空字串
+                        // 時間格式不正確，回傳空字串
                         return '';
                     }
                     const year = date.getFullYear();
@@ -434,6 +445,7 @@
                 },
                 // [ 切換頁面Content內容 (C,R,U,D) & 獲取目前編輯資料]
                 content(Num, MCNo) {
+                    const token = localStorage.getItem('Token');
                     let _this = this;
                     _this.contentNow = Num;
                     // ↓取得目前編輯資料
@@ -489,6 +501,7 @@
                 // ----------------------------------------------------
                 // 【 新增 】
                 create() {
+                    const token = localStorage.getItem('Token');
                     const request = {
                         MCName: this.addData.mCName,
                         MCIcon: this.addData.mCIcon,
@@ -513,6 +526,7 @@
                 // ----------------------------------------------------
                 // 【 修改 】
                 update() {
+                    const token = localStorage.getItem('Token');
                     const request = {
                         MCName: this.editData[0].MCName,
                         MCXtrol: this.editData[0].MCXtrol,
@@ -561,6 +575,7 @@
                 },
                 /* 批次刪除資料 */
                 deleteData(mcnoParams) {
+                    const token = localStorage.getItem('Token');
                     //console.log(this.selectedItems);
                     if (confirm("確定要刪除所選擇的資料嗎？")) {
                         axios.delete(`/api/SystemClass/DeleteManageClassBatch/batch?${mcnoParams}`, {

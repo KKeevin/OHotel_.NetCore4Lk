@@ -1,4 +1,4 @@
-﻿/*----------------- Main Declaration -----------------*/
+/*----------------- Main Declaration -----------------*/
 const webApiBaseAddress = "https://localhost:7015";
 const token = localStorage.getItem('Token');
 
@@ -22,28 +22,52 @@ const LayoutVue = Vue.createApp({
     },
     methods: {
         getManageClassData() {
+            const token = localStorage.getItem('Token');
+            if (!token) {
+                this.ManageClassData = {};
+                return;
+            }
             axios.get(`/api/AccountLogin/GetUserInfo`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+                headers: { "Authorization": `Bearer ${token}` }
             })
                 .then(response => {
                     const STNo = response.data.STNo;
+                    if (!STNo) {
+                        console.warn('GetUserInfo 未回傳 STNo，嘗試 STNo=1');
+                        this.tryFallbackMenuFetch(token);
+                        return;
+                    }
                     axios.get(`/api/Layout/GetManageClassAndItemsBySTNo/${STNo}`, {
-                        headers: {
-                            "Authorization": `Bearer ${token}`
-                        }
+                        headers: { "Authorization": `Bearer ${token}` }
                     })
                         .then(response => {
-                            this.ManageClassData = response.data;
+                            this.ManageClassData = response.data || {};
                             this.setTreeViewActive();
                         })
                         .catch(error => {
-                            console.log(error);
+                            console.warn('GetManageClassAndItemsBySTNo 失敗', error.response?.status, error.response?.data);
+                            this.ManageClassData = {};
                         });
                 })
                 .catch(error => {
-                    console.log(error);
+                    console.warn('GetUserInfo 失敗', error.response?.status, error.response?.data);
+                    this.tryFallbackMenuFetch(token);
+                });
+        },
+        tryFallbackMenuFetch(token) {
+            if (!token) { this.ManageClassData = {}; return; }
+            axios.get('/api/Layout/GetManageClassAndItemsBySTNo/1', { headers: { "Authorization": `Bearer ${token}` } })
+                .then(r => { this.ManageClassData = r.data || {}; this.setTreeViewActive(); })
+                .catch(() => { this.ManageClassData = {}; });
+        },
+        seedMenu() {
+            axios.post('/api/DbInit/SeedSqliteMenu')
+                .then(() => {
+                    alert('選單已初始化，請重新整理頁面');
+                    window.location.reload();
+                })
+                .catch(err => {
+                    alert('初始化失敗：' + (err.response?.data?.message || err.message));
                 });
         },
         setTreeViewActive() {
@@ -129,7 +153,8 @@ const LoginVue = Vue.createApp({
     },
     methods: {
         checkLogin() {
-            if (this.inputCaptcha === this.captcha) {
+            const isDev = /localhost|127\.0\.0\.1/.test(window.location.hostname);
+            if (isDev || this.inputCaptcha === this.captcha) {
                 this.Login();
             } else {
                 alert("驗證碼有誤!!");
@@ -155,8 +180,8 @@ const LoginVue = Vue.createApp({
                     window.location = "/Sys/Login";
                 }
             } catch (error) {
-                alert("登入失敗，請重新輸入");
-                window.location = "/Sys/Login";
+                const msg = error.response?.data ?? error.message ?? "登入失敗，請重新輸入";
+                alert(typeof msg === "string" ? msg : "登入失敗，請重新輸入");
             }
         },
         refreshCaptcha() {

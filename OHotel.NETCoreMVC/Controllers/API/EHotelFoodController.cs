@@ -1,8 +1,8 @@
-﻿using EasyCLib.NET.Sdk;
+using EasyCLib.NET.Sdk;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using OHotel.NETCoreMVC.DTO;
 using Microsoft.AspNetCore.Authorization;
 
@@ -144,7 +144,7 @@ namespace OHotel.NETCoreMVC.Controllers.API
                             int totalCount = (int)await countCommand.ExecuteScalarAsync();
                             int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
-                            // 創建個 paging 物件，把東西丟進去
+                            // 建立 paging 物件，把東西丟進去
                             var paging = new { TotalPages = totalPages, CurrentPage = page, TotalCount = totalCount };
                             var resultWithPaging = new { Paging = paging, Data = results };
                             return Ok(resultWithPaging);

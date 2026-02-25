@@ -1,8 +1,8 @@
-﻿using EasyCLib.NET.Sdk;
+using EasyCLib.NET.Sdk;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using OHotel.NETCoreMVC.DTO;
 using Microsoft.AspNetCore.Authorization;
 
@@ -23,40 +23,57 @@ namespace OHotel.NETCoreMVC.Controllers.API
         }
 
         /// <summary>
-        /// ※查詢所有資料
+        /// ※查詢飯店資料（支援 Sqlite 與 SQL Server）
         /// </summary>
-        [EnableCors("CorsPolicy")] // 加入跨網權限設定
+        [EnableCors("CorsPolicy")]
         [HttpGet]
-        public async Task<IActionResult> GetHotelInfo()
-        { // 使用SqlReader
-            string connectionString = _Configuration.GetConnectionString("SQLCD_Read_OHotel");
-            using (SqlConnection connection = new(connectionString))
+        public IActionResult GetHotelInfo()
+        {
+            var connStr = _Configuration.GetConnectionString("SQLCD_Read_OHotel");
+            var dbProvider = _Configuration["DatabaseProvider"] ?? "";
+            var isSqlite = string.Equals(dbProvider, "Sqlite", StringComparison.OrdinalIgnoreCase);
+            var sql = isSqlite
+                ? "SELECT * FROM EHotel_Info ORDER BY HINo ASC LIMIT 1"
+                : "SELECT TOP 1 * FROM EHotel_Info ORDER BY HINo ASC";
+            try
             {
-                Sql = "SELECT top 1 * FROM EHotel_Info order by HINo ASC";
-                using (SqlCommand command = new(Sql, connection))
+                _IDbFunction.DbConnect(connStr ?? "");
+                if (!_IDbFunction.SelectDbDataView(sql, "EHotel_Info"))
                 {
-                    await connection.OpenAsync();  // 這邊用了CommandBehavior.CloseConnection，它會在關閉 SqlDataReader 時同時關閉資料庫連線
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync(CommandBehavior.CloseConnection))
-                    {
-                        List<IDictionary<string, object>> results = new();
-                        while (await reader.ReadAsync())
-                        {
-                            var result = Enumerable.Range(0, reader.FieldCount).ToDictionary(reader.GetName, reader.GetValue);
-                            results.Add(result);
-                        }
-                        return Ok(results);
-                    }
+                    _IDbFunction.DbClose();
+                    return Ok(new List<IDictionary<string, object>>());
                 }
+                var results = new List<IDictionary<string, object>>();
+                for (int i = 0; i < _IDbFunction.SqlDataView.Count; i++)
+                {
+                    var row = _IDbFunction.SqlDataView[i];
+                    var dict = new Dictionary<string, object>();
+                    var table = _IDbFunction.SqlDataView.Table;
+                    if (table == null) continue;
+                    foreach (global::System.Data.DataColumn col in table.Columns)
+                        dict[col.ColumnName] = row[col.ColumnName] ?? DBNull.Value;
+                    results.Add(dict);
+                }
+                _IDbFunction.DbClose();
+                return Ok(results);
+            }
+            catch
+            {
+                _IDbFunction.DbClose();
+                throw;
             }
         }
 
         /// <summary>
-        /// ※修改 
+        /// ※修改飯店資料（目前僅支援 SQL Server）
         /// </summary>
         [EnableCors("CorsPolicy")]
         [HttpPatch("{HINo}")]
         public async Task<IActionResult> UpdateEHotelInfo(int HINo, [FromBody] EHotelInfoDTO eHotelInfo)
         {
+            var dbProvider = _Configuration["DatabaseProvider"] ?? "";
+            if (string.Equals(dbProvider, "Sqlite", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(501, "飯店資料修改功能目前僅支援 SQL Server");
             string connectionString = _Configuration.GetConnectionString("SQLCD_Read_OHotel");
             using (SqlConnection connection = new SqlConnection(connectionString))
             {

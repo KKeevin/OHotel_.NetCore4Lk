@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]特斯德飯店後端管理</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} - 特斯德飯店後端管理" : "特斯德飯店後端管理")</title>
     @* ------------------ NEW ADD ------------------ *@
     <script src="https://kit.fontawesome.com/f9115293c8.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="~/css/bootstrap.min.css" asp-append-version="true" />
@@ -22,7 +23,11 @@
                         <i class="app-menu__icon fa fa-home"></i><span class="app-menu__label">HOME</span>
                     </a>
                 </li>
-                <li v-for="(items, category) in ManageClassData" :key="category" class="treeview"
+                <li v-if="!ManageClassData || Object.keys(ManageClassData).length === 0" class="px-3 py-2">
+                    <small class="text-muted">{{ ManageClassData ? '選單為空，請' : '載入中或選單為空，請' }}</small>
+                    <button type="button" class="btn btn-sm btn-outline-primary ms-1" @@click="seedMenu">初始化選單</button>
+                </li>
+                <li v-for="(items, category) in (ManageClassData || {})" :key="category" class="treeview"
                     :class="{'is-expanded': items[0].MCXtrol === currentController}">
                     <a class="app-menu__item" href="#" data-toggle="treeview" :data-controller="items[0].MCXtrol"
                        @@click.prevent="expand(items[0].MCXtrol)">
@@ -44,10 +49,10 @@
 
         </aside>
     </div>
-    <div role="main" class="pb-3">
+    <div class="app-content" role="main">
         @RenderBody()
     </div>
-    <footer><div class="site-footer">Copyright (C)2019</div></footer>
+    <footer><div class="site-footer">Copyright © @DateTime.Now.Year 特斯德飯店後端管理</div></footer>
     <!-- Essential frameworks for application to work -->
     <script src="~/lib/vue/vue.global.prod.js"></script>
     <script src="~/lib/axios/axios.min.js"></script>

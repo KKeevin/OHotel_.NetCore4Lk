@@ -1,8 +1,8 @@
-﻿using EasyCLib.NET.Sdk;
+using System.Data;
+using EasyCLib.NET.Sdk;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using OHotel.NETCoreMVC.DTO;
 using OHotel.NETCoreMVC.Helper;
 using OHotel.NETCoreMVC.Models;
@@ -28,6 +28,8 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
             _VerifyHelper = verifyHelper;
         }
 
+        private bool IsSqlite => string.Equals(_Configuration["DatabaseProvider"] ?? "", "Sqlite", StringComparison.OrdinalIgnoreCase);
+
         /// <summary>
         /// ※ 檢視及查詢【JWT權限判定】
         /// </summary>
@@ -38,13 +40,56 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
             try
             {
                 string IdentityName = HttpContext.User.Identity?.Name ?? "";
-                MgrUseredItemPower UserUsedPower = await _VerifyHelper.VerifyJwtMgr(ItemID, IdentityName.ToString()); // 將這裡寫項目編號
+                MgrUseredItemPower UserUsedPower = await _VerifyHelper.VerifyJwtMgr(ItemID, IdentityName.ToString());
 
-                if (UserUsedPower.MgrUserPowerList?.Count > 0 && UserUsedPower.MgrUserPowerList?.ToList()[0].MgrPV == 1) // 哪個權限開放便能操作
+                if (UserUsedPower.MgrUserPowerList?.Count > 0 && UserUsedPower.MgrUserPowerList?.ToList()[0].MgrPV == 1)
                 {
+                    var safeCol = column switch
+                    {
+                        "MCName" or "MCXtrol" or "MCIcon" or "MTime" => column,
+                        "[Order]" => IsSqlite ? "\"Order\"" : "[Order]",
+                        _ => "MCNo"
+                    };
+                    var dir = orderBy?.Contains("DESC", StringComparison.OrdinalIgnoreCase) == true ? "DESC" : "ASC";
+                    var safeOrder = orderBy?.Contains("Order", StringComparison.OrdinalIgnoreCase) == true
+                        ? (IsSqlite ? $"\"Order\" {dir}" : $"[Order] {dir}")
+                        : (orderBy ?? "MCNo ASC");
+                    var searchVal = $"%{_VerifyHelper.SanitizeInput(search)}%";
+                    var offset = (page - 1) * pageSize;
+
+                    if (IsSqlite)
+                    {
+                        _IDbFunction.DbConnect(connectionString ?? "");
+                        var dataSql = $"SELECT * FROM {selectFrom} WHERE State = 0 AND {safeCol} LIKE @Search ORDER BY {safeOrder} LIMIT @PageSize OFFSET @Offset";
+                        var countSql = $"SELECT COUNT(*) FROM {selectFrom} WHERE State = 0 AND {safeCol} LIKE @Search";
+                        var prms = new Dictionary<string, object> { ["@Search"] = searchVal, ["@Offset"] = offset, ["@PageSize"] = pageSize };
+
+                        if (!_IDbFunction.SelectDbDataViewWithParams(dataSql, "Data", prms))
+                        {
+                            _IDbFunction.DbClose();
+                            return Ok(new { Paging = new { TotalPages = 0, CurrentPage = page, TotalCount = 0 }, Data = new List<IDictionary<string, object>>() });
+                        }
+                        var results = new List<IDictionary<string, object>>();
+                        for (int i = 0; i < _IDbFunction.SqlDataView.Count; i++)
+                        {
+                            var row = _IDbFunction.SqlDataView[i];
+                            var dict = new Dictionary<string, object>();
+                            foreach (DataColumn col in _IDbFunction.SqlDataView.Table.Columns)
+                            {
+                                var key = (col.ColumnName == "[Order]" || col.ColumnName == "Order") ? "Order" : col.ColumnName;
+                                dict[key] = row[col.ColumnName] ?? DBNull.Value;
+                            }
+                            results.Add(dict);
+                        }
+                        _IDbFunction.SelectDbDataViewWithParams(countSql, "Cnt", new Dictionary<string, object> { ["@Search"] = searchVal });
+                        var totalCount = _IDbFunction.SqlDataView.Count > 0 ? Convert.ToInt32(_IDbFunction.SqlDataView[0][0]) : 0;
+                        _IDbFunction.DbClose();
+                        var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+                        return Ok(new { Paging = new { TotalPages = totalPages, CurrentPage = page, TotalCount = totalCount }, Data = results });
+                    }
+
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
-                        // 獲得目前頁數及搜尋結果
                         string dataSql = $"SELECT * FROM {selectFrom} WHERE State = 0 AND {column} LIKE '%' + @Search + '%' ORDER BY {orderBy} OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
                         string countSql = $"SELECT COUNT(*) FROM {selectFrom} WHERE State = 0 AND {column} LIKE '%' + @Search + '%'";
 
@@ -53,12 +98,10 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                         using (SqlCommand dataCommand = new SqlCommand(dataSql, connection))
                         using (SqlCommand countCommand = new SqlCommand(countSql, connection))
                         {
-                            // SanitizeInput: 防止 SQL 注入，使用參數化查詢處理用戶輸入
-                            dataCommand.Parameters.AddWithValue("@Search", $"%{_VerifyHelper.SanitizeInput(search)}%");
-                            dataCommand.Parameters.AddWithValue("@Offset", (page - 1) * pageSize);
+                            dataCommand.Parameters.AddWithValue("@Search", searchVal);
+                            dataCommand.Parameters.AddWithValue("@Offset", offset);
                             dataCommand.Parameters.AddWithValue("@PageSize", pageSize);
-
-                            countCommand.Parameters.AddWithValue("@Search", $"%{_VerifyHelper.SanitizeInput(search)}%");
+                            countCommand.Parameters.AddWithValue("@Search", searchVal);
 
                             using (SqlDataReader dataReader = await dataCommand.ExecuteReaderAsync())
                             {
@@ -83,7 +126,7 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                 }
                 else
                 {
-                    return BadRequest("Insufficient privileges"); // 權限不足
+                    return BadRequest("Insufficient privileges");
                 }
             }
             catch (Exception ex)
@@ -180,7 +223,7 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                             command.Parameters.AddWithValue("@MCName", manageClass.MCName);
                             command.Parameters.AddWithValue("@MCXtrol", manageClass.MCXtrol);
                             command.Parameters.AddWithValue("@MCIcon", manageClass.MCIcon);
-                            command.Parameters.Add("@Order", SqlDbType.Int).Value = manageClass.Order;
+                            command.Parameters.Add("@Order", global::System.Data.SqlDbType.Int).Value = manageClass.Order;
                             await connection.OpenAsync();
                             int result = await command.ExecuteNonQueryAsync();
                             if (result > 0)
@@ -217,8 +260,31 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                 string IdentityName = HttpContext.User.Identity?.Name ?? "";
                 MgrUseredItemPower UserUsedPower = await _VerifyHelper.VerifyJwtMgr(ItemID, IdentityName.ToString()); // 將這裡寫項目編號
 
-                if (UserUsedPower.MgrUserPowerList?.Count > 0 && UserUsedPower.MgrUserPowerList?.ToList()[0].MgrPU == 1) // 哪個權限開放便能操作
+                if (UserUsedPower.MgrUserPowerList?.Count > 0 && UserUsedPower.MgrUserPowerList?.ToList()[0].MgrPU == 1)
                 {
+                    if (IsSqlite)
+                    {
+                        _IDbFunction.DbConnect(connectionString ?? "");
+                        if (!_IDbFunction.SelectDbDataViewWithParams("SELECT * FROM ManageClass WHERE MCNo = @MCNo", "MC", new Dictionary<string, object> { ["@MCNo"] = MCNo }))
+                        {
+                            _IDbFunction.DbClose();
+                            return Ok(new List<IDictionary<string, object>>());
+                        }
+                        var results = new List<IDictionary<string, object>>();
+                        for (int i = 0; i < _IDbFunction.SqlDataView.Count; i++)
+                        {
+                            var row = _IDbFunction.SqlDataView[i];
+                            var dict = new Dictionary<string, object>();
+                            foreach (DataColumn col in _IDbFunction.SqlDataView.Table.Columns)
+                            {
+                                var key = (col.ColumnName == "[Order]" || col.ColumnName == "Order") ? "Order" : col.ColumnName;
+                                dict[key] = row[col.ColumnName] ?? DBNull.Value;
+                            }
+                            results.Add(dict);
+                        }
+                        _IDbFunction.DbClose();
+                        return Ok(results);
+                    }
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
                         string sql = @"SELECT * FROM ManageClass WHERE MCNo = @MCNo";
@@ -241,7 +307,7 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                 }
                 else
                 {
-                    return BadRequest("Insufficient privileges"); // 權限不足
+                    return BadRequest("Insufficient privileges");
                 }
             }
             catch (Exception ex)

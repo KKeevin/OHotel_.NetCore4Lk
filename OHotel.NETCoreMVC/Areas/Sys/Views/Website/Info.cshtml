@@ -1,4 +1,4 @@
-﻿<main class="app-content" id="HotelInfoVue">
+<main class="app-content" id="HotelInfoVue">
     <!-- 所在位置 -->
     <div class="app-title">
         <ol class="breadcrumb">
@@ -332,7 +332,7 @@
         formatTime(timeStr) {
             const date = new Date(timeStr);
             if (isNaN(date.getTime())) {
-                // 時間格式不正確，返回空字串
+                // 時間格式不正確，回傳空字串
                 return '';
             }
             const year = date.getFullYear();

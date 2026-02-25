@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Reflection;
 
@@ -9,7 +9,7 @@ namespace OHotel.NETCoreMVC.Controllers.Sys
     [Route("api/[controller]/[action]")]
     public class ToolsController : ControllerBase
     {
-        /* 01. 創建{folderName}資料夾至 Views 裡 */
+        /* 01. 建立 {folderName} 資料夾至 Views 裡 */
         [HttpPost("{folderName}")]
         public IActionResult CreateFolder(string folderName)
         {
@@ -38,7 +38,7 @@ namespace OHotel.NETCoreMVC.Controllers.Sys
             }
         }
 
-        /* 02. 創建`{folderName}Controller.cs`至 Controllers 裡 */
+        /* 02. 建立 `{folderName}Controller.cs` 至 Controllers 裡 */
         [HttpPost("{folderName}")]
         public IActionResult CreateControllerFile(string folderName)
         {
@@ -48,7 +48,7 @@ namespace OHotel.NETCoreMVC.Controllers.Sys
                 string currentWorkingDirectory = Directory.GetCurrentDirectory();
 
                 // 取得專案名稱
-                string projectName = Assembly.GetEntryAssembly().GetName().Name;
+                string projectName = Assembly.GetEntryAssembly()?.GetName().Name ?? "OHotel.NETCoreMVC";
 
                 // 資料夾的完整路徑
                 string folderPath = Path.Combine(currentWorkingDirectory, "Controllers");
@@ -158,7 +158,7 @@ namespace OHotel.NETCoreMVC.Controllers.Sys
         }
 
         // ----------------------------------------------------------------------------------------------
-        /* 05. 至 Views 裡{folderName}創建{fileName).cshtml文件 */
+        /* 05. 至 Views 裡 {folderName} 建立 {fileName}.cshtml 檔案 */
         [HttpPost("{folderName}/{fileName}")]
         public IActionResult CreateCshtmlFile(string folderName, string fileName)
         {

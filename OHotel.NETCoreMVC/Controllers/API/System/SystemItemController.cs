@@ -1,17 +1,14 @@
-﻿using EasyCLib.NET.Sdk;
+using System.Data;
+using EasyCLib.NET.Sdk;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using OHotel.NETCoreMVC.DTO;
 using OHotel.NETCoreMVC.Helper;
 using OHotel.NETCoreMVC.Models;
 
 namespace OHotel.NETCoreMVC.Controllers.API.System
 {
-    // ※ [ 230718 KEVINN ]: 最後彙整
-    // ※ [ 230628 KEVINN ]: 在該則內容完整增加JWT Token取得會員資訊去判斷有無特殊權限
-    // ※ [ 230519 KEVINN ]: 整支SystemItemController有優化過 基本上算是最完善的版本 可複製此當範例套用
     [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
@@ -22,6 +19,7 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
         private IVerifyHelper _VerifyHelper;
         private string ItemID { get; set; } = "2"; 
         private string Sql { get; set; } = "";
+        private bool IsSqlite => string.Equals(_Configuration["DatabaseProvider"] ?? "", "Sqlite", StringComparison.OrdinalIgnoreCase);
         public SystemItemController(IDbFunction dbFunction, IConfiguration configuration, IVerifyHelper verifyHelper)
         {
             _IDbFunction = dbFunction;
@@ -40,15 +38,38 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                 string IdentityName = HttpContext.User.Identity?.Name ?? "";
                 MgrUseredItemPower UserUsedPower = await _VerifyHelper.VerifyJwtMgr(ItemID, IdentityName.ToString()); // 將這裡寫項目編號
 
-                if (UserUsedPower.MgrUserPowerList?.Count > 0 && UserUsedPower.MgrUserPowerList?.ToList()[0].MgrPV == 1) // 哪個權限開放便能操作
+                if (UserUsedPower.MgrUserPowerList?.Count > 0 && UserUsedPower.MgrUserPowerList?.ToList()[0].MgrPV == 1)
                 {
+                    if (IsSqlite)
+                    {
+                        _IDbFunction.DbConnect(connectionString ?? "");
+                        if (!_IDbFunction.SelectDbDataView("SELECT * FROM ManageItem WHERE State = 0 ORDER BY \"Order\" ASC", "MI"))
+                        {
+                            _IDbFunction.DbClose();
+                            return Ok(new List<IDictionary<string, object>>());
+                        }
+                        var results = new List<IDictionary<string, object>>();
+                        for (int i = 0; i < _IDbFunction.SqlDataView.Count; i++)
+                        {
+                            var row = _IDbFunction.SqlDataView[i];
+                            var dict = new Dictionary<string, object>();
+                            foreach (DataColumn col in _IDbFunction.SqlDataView.Table.Columns)
+                            {
+                                var key = (col.ColumnName == "[Order]" || col.ColumnName == "Order") ? "Order" : col.ColumnName;
+                                dict[key] = row[col.ColumnName] ?? DBNull.Value;
+                            }
+                            results.Add(dict);
+                        }
+                        _IDbFunction.DbClose();
+                        return Ok(results);
+                    }
                     using (SqlConnection connection = new(connectionString))
                     {
                         string sql = "SELECT * FROM ManageItem WHERE State = 0 order by [Order] ASC";
                         using (SqlCommand command = new(sql, connection))
                         {
-                            await connection.OpenAsync();  // 這邊用了CommandBehavior.CloseConnection，它會在關閉 SqlDataReader 時同時關閉資料庫連線
-                            using (SqlDataReader reader = await command.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                            await connection.OpenAsync();
+                            using (SqlDataReader reader = await command.ExecuteReaderAsync(global::System.Data.CommandBehavior.CloseConnection))
                             {
                                 List<IDictionary<string, object>> results = new List<IDictionary<string, object>>();
                                 while (await reader.ReadAsync())
@@ -83,13 +104,50 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                 string IdentityName = HttpContext.User.Identity?.Name ?? "";
                 MgrUseredItemPower UserUsedPower = await _VerifyHelper.VerifyJwtMgr(ItemID, IdentityName.ToString()); // 將這裡寫項目編號
 
-                if (UserUsedPower.MgrUserPowerList?.Count > 0 && UserUsedPower.MgrUserPowerList?.ToList()[0].MgrPV == 1) // 哪個權限開放便能操作
+                if (UserUsedPower.MgrUserPowerList?.Count > 0 && UserUsedPower.MgrUserPowerList?.ToList()[0].MgrPV == 1)
                 {
+                    var safeCol = column == "ItemName" || column == "ManageItem.MCNo" || column == "MCNo" ? column : "ItemName";
+                    var dir = orderBy?.Contains("DESC", StringComparison.OrdinalIgnoreCase) == true ? "DESC" : "ASC";
+                    var safeOrder = orderBy?.Contains("Order", StringComparison.OrdinalIgnoreCase) == true
+                        ? (IsSqlite ? $"ManageItem.\"Order\" {dir}" : orderBy)
+                        : (orderBy ?? "MINo ASC");
+                    var searchVal = $"%{_VerifyHelper.SanitizeInput(search)}%";
+                    var offset = (page - 1) * pageSize;
+
+                    if (IsSqlite)
+                    {
+                        _IDbFunction.DbConnect(connectionString ?? "");
+                        var dataSql = $"SELECT ManageItem.*, ManageClass.MCName FROM {selectFrom} INNER JOIN ManageClass ON (ManageClass.MCNo = ManageItem.MCNo) WHERE ManageItem.State = 0 AND {safeCol} LIKE @Search ORDER BY {safeOrder} LIMIT @PageSize OFFSET @Offset";
+                        var countSql = $"SELECT COUNT(*) FROM {selectFrom} INNER JOIN ManageClass ON (ManageClass.MCNo = ManageItem.MCNo) WHERE ManageItem.State = 0 AND {safeCol} LIKE @Search";
+                        var prms = new Dictionary<string, object> { ["@Search"] = searchVal, ["@Offset"] = offset, ["@PageSize"] = pageSize };
+
+                        if (!_IDbFunction.SelectDbDataViewWithParams(dataSql, "Data", prms))
+                        {
+                            _IDbFunction.DbClose();
+                            return Ok(new { Paging = new { TotalPages = 0, CurrentPage = page, TotalCount = 0 }, Data = new List<IDictionary<string, object>>() });
+                        }
+                        var results = new List<IDictionary<string, object>>();
+                        for (int i = 0; i < _IDbFunction.SqlDataView.Count; i++)
+                        {
+                            var row = _IDbFunction.SqlDataView[i];
+                            var dict = new Dictionary<string, object>();
+                            foreach (DataColumn col in _IDbFunction.SqlDataView.Table.Columns)
+                            {
+                                var key = (col.ColumnName == "[Order]" || col.ColumnName == "Order") ? "Order" : col.ColumnName;
+                                dict[key] = row[col.ColumnName] ?? DBNull.Value;
+                            }
+                            results.Add(dict);
+                        }
+                        _IDbFunction.SelectDbDataViewWithParams(countSql, "Cnt", new Dictionary<string, object> { ["@Search"] = searchVal });
+                        var totalCount = _IDbFunction.SqlDataView.Count > 0 ? Convert.ToInt32(_IDbFunction.SqlDataView[0][0]) : 0;
+                        _IDbFunction.DbClose();
+                        var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+                        return Ok(new { Paging = new { TotalPages = totalPages, CurrentPage = page, TotalCount = totalCount }, Data = results });
+                    }
+
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
-                        // 獲得目前頁數及搜尋結果
                         string dataSql = $"SELECT ManageItem.*, ManageClass.MCName FROM {selectFrom} INNER JOIN ManageClass ON (ManageClass.MCNo = ManageItem.MCNo) WHERE ManageItem.State = 0 AND {column} LIKE '%' + @Search + '%' ORDER BY {orderBy} OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
-
                         string countSql = $"SELECT COUNT(*) FROM {selectFrom} WHERE State = 0 AND {column} LIKE '%' + @Search + '%'";
 
                         await connection.OpenAsync();
@@ -97,12 +155,10 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                         using (SqlCommand dataCommand = new SqlCommand(dataSql, connection))
                         using (SqlCommand countCommand = new SqlCommand(countSql, connection))
                         {
-                            // SanitizeInput: 防止 SQL 注入，使用參數化查詢處理用戶輸入
-                            dataCommand.Parameters.AddWithValue("@Search", $"%{_VerifyHelper.SanitizeInput(search)}%");
-                            dataCommand.Parameters.AddWithValue("@Offset", (page - 1) * pageSize);
+                            dataCommand.Parameters.AddWithValue("@Search", searchVal);
+                            dataCommand.Parameters.AddWithValue("@Offset", offset);
                             dataCommand.Parameters.AddWithValue("@PageSize", pageSize);
-
-                            countCommand.Parameters.AddWithValue("@Search", $"%{_VerifyHelper.SanitizeInput(search)}%");
+                            countCommand.Parameters.AddWithValue("@Search", searchVal);
 
                             using (SqlDataReader dataReader = await dataCommand.ExecuteReaderAsync())
                             {
@@ -127,7 +183,7 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                 }
                 else
                 {
-                    return BadRequest("權限不足"); // 權限不足Insufficient privileges
+                    return BadRequest("權限不足");
                 }
             }
             catch (Exception ex)
@@ -315,7 +371,7 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                         {
                             command.Parameters.AddWithValue("@MINo", MINo);
                             await connection.OpenAsync();
-                            using (SqlDataReader reader = await command.ExecuteReaderAsync(CommandBehavior.CloseConnection))
+                            using (SqlDataReader reader = await command.ExecuteReaderAsync(global::System.Data.CommandBehavior.CloseConnection))
                             {
                                 List<IDictionary<string, object>> results = new List<IDictionary<string, object>>();
                                 while (await reader.ReadAsync())
@@ -351,8 +407,31 @@ namespace OHotel.NETCoreMVC.Controllers.API.System
                 string IdentityName = HttpContext.User.Identity?.Name ?? "";
                 MgrUseredItemPower UserUsedPower = await _VerifyHelper.VerifyJwtMgr(ItemID, IdentityName.ToString()); // 將這裡寫項目編號
 
-                if (UserUsedPower.MgrUserPowerList?.Count > 0 && UserUsedPower.MgrUserPowerList?.ToList()[0].MgrPU == 1) // 哪個權限開放便能操作
+                if (UserUsedPower.MgrUserPowerList?.Count > 0 && UserUsedPower.MgrUserPowerList?.ToList()[0].MgrPU == 1)
                 {
+                    if (IsSqlite)
+                    {
+                        _IDbFunction.DbConnect(connectionString ?? "");
+                        if (!_IDbFunction.SelectDbDataView("SELECT * FROM ManageClass WHERE State = 0 ORDER BY \"Order\" ASC", "MC"))
+                        {
+                            _IDbFunction.DbClose();
+                            return Ok(new List<IDictionary<string, object>>());
+                        }
+                        var results = new List<IDictionary<string, object>>();
+                        for (int i = 0; i < _IDbFunction.SqlDataView.Count; i++)
+                        {
+                            var row = _IDbFunction.SqlDataView[i];
+                            var dict = new Dictionary<string, object>();
+                            foreach (DataColumn col in _IDbFunction.SqlDataView.Table.Columns)
+                            {
+                                var key = (col.ColumnName == "[Order]" || col.ColumnName == "Order") ? "Order" : col.ColumnName;
+                                dict[key] = row[col.ColumnName] ?? DBNull.Value;
+                            }
+                            results.Add(dict);
+                        }
+                        _IDbFunction.DbClose();
+                        return Ok(results);
+                    }
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
                         Sql = "SELECT * FROM ManageClass WHERE State = 0 order by ManageClass.[Order] ASC";

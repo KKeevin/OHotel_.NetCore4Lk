@@ -571,6 +571,11 @@ h1, h2, h3, h4, h5, h6,
   -o-transition: margin-left 0.3s ease;
   transition: margin-left 0.3s ease;
 }
+/* 內層 app-content（來自 View）不重複 margin */
+.app-content .app-content {
+  margin-left: 0;
+  margin-top: 0;
+}
 
 @media (min-width: 768px) {
   .app-content {
@@ -1108,7 +1113,7 @@ h1, h2, h3, h4, h5, h6,
   /*.sidebar-mini.sidenav-toggled .app-content {
     margin-left: 50px;
   }*/
-  .app.sidebar-mini.sidenav-toggled + .pb-3 .app-content {
+  .app.sidebar-mini.sidenav-toggled + .app-content {
   	margin-left: 50px;
   }
   .sidebar-mini.sidenav-toggled .app-sidebar {

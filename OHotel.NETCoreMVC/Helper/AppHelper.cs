@@ -1,107 +1,69 @@
-﻿using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Reflection;
 
 namespace OHotel.NETCoreMVC.Helper
 {
-    public class AppHelper
+    /// <summary>通用輔助方法</summary>
+    public static class AppHelper
     {
-        /// <summary>
-        /// 調整 model數值,防止SQL 注入
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="tt"></param>
-        /// <returns></returns>
+        /// <summary>調整 model 數值，防止 SQL 注入與 XSS</summary>
         public static T ModelResetValueInjection<T>(T tt) where T : class, new()
         {
-            T result = default;
-            foreach (PropertyInfo property in tt.GetType().GetProperties())
+            foreach (var property in typeof(T).GetProperties())
             {
-                var Key = property.Name;
-                var Value = property.GetValue(tt, null);
-                if (Value?.GetType() == typeof(int) && Value != null)
-                    Value = Convert.ToInt32(Value);
-                else if (Value?.GetType() == typeof(string))
-                    Value = Value?.ToString().Replace("'", "").Replace("&", "&amp;").Replace("\"", "&quot;").Replace("<", "&lt;").Replace(">", "&gt;").Replace(" ", "&nbsp;&nbsp;");
-                property.SetValue(tt, Value);
-                //mgrMenuJsonConvert.DeserializeObject<Person>(JsonConvert.SerializeObject(source));
-                //_RETURN += "Key="+ Key+ "/Value="+ Value+ "/type="+ type+"\r\n";
+                var value = property.GetValue(tt, null);
+                if (value is string s)
+                    value = s.Replace("'", "").Replace("&", "&amp;").Replace("\"", "&quot;").Replace("<", "&lt;").Replace(">", "&gt;").Replace(" ", "&nbsp;&nbsp;");
+                property.SetValue(tt, value);
             }
-            result = tt;
-            return result;
+            return tt;
         }
-        /// <summary>
-        /// 根據網址取得 IP位置 
-        /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
-        public static string? GetDomianGetHost(string? url)
+
+        /// <summary>從網址取得 Host</summary>
+        public static string? GetDomainHost(string? url)
         {
-            string? host = default;
+            if (string.IsNullOrEmpty(url)) return null;
+            return Uri.TryCreate(url, UriKind.Absolute, out var uri) ? uri.Host : null;
+        }
+
+        [Obsolete("請使用 GetDomainHost，此方法名稱為拼字錯誤保留")]
+        public static string? GetDomianGetHost(string? url) => GetDomainHost(url);
+
+        /// <summary>從 hostname 取得 IP</summary>
+        public static string? GetHostIp(string? host)
+        {
+            if (string.IsNullOrEmpty(host)) return null;
             try
             {
-                if (!String.IsNullOrEmpty(url)) host = new Uri(url).Host;
+                var addresses = Dns.GetHostAddresses(host);
+                return addresses.Length > 0 ? addresses[0].ToString() : null;
             }
-            catch { }
-            return host;
+            catch { return null; }
         }
-        /// <summary>
-        /// hostname　取得ＩＰ位置，這個有點奇怪　如果放在相同服務器上　會顯示 127.0.0.1
-        /// </summary>
-        /// <param name="host"></param>
-        /// <returns></returns>
-        public static string? GetHostIp(string host)
+
+        /// <summary>從 IP 取得 HostName</summary>
+        public static string? GetIpHost(string? ip)
         {
-            string? ip = default;
-            try
-            {
-                if (!String.IsNullOrEmpty(host))
-                    ip = System.Net.Dns.GetHostAddresses(host).GetValue(0)?.ToString();
-            }
-            catch { }
-            return ip;
+            if (string.IsNullOrEmpty(ip)) return null;
+            try { return Dns.GetHostEntry(ip).HostName; }
+            catch { return null; }
         }
-        /// <summary>
-        /// IP 取得 Host
-        /// </summary>
-        /// <param name="ip"></param>
-        /// <returns></returns>
-        public static string? GetIpHost(string ip)
-        {
-            string? host = default;
-            try
-            {
-                if (!String.IsNullOrEmpty(ip))
-                    host = System.Net.Dns.GetHostEntry(ip).HostName;
-            }
-            catch { }
-            return host;
-        }
+
+        /// <summary>取得本機對外 IP</summary>
         public static string? GetServerIpAddresses()
         {
-
-            string? serverIpAddresses = string.Empty;
-            //--取得NetworkInterfaces 所有資訊
-            var networks = NetworkInterface.GetAllNetworkInterfaces();
-            serverIpAddresses = networks.FirstOrDefault()?.GetIPProperties().UnicastAddresses.Where(p => p.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(p.Address)).FirstOrDefault()?.Address.ToString();
-            /*foreach (var network in networks)
-            {
-                var ipAddress = network.GetIPProperties().UnicastAddresses.Where(p => p.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(p.Address)).FirstOrDefault()?.Address.ToString();
-
-                serverIpAddresses += network.Name + ":" + ipAddress + "|";
-            }*/
-            return serverIpAddresses;
+            var network = NetworkInterface.GetAllNetworkInterfaces()
+                .FirstOrDefault(n => n.OperationalStatus == OperationalStatus.Up);
+            if (network == null) return null;
+            var ip = network.GetIPProperties().UnicastAddresses
+                .FirstOrDefault(p => p.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(p.Address));
+            return ip?.Address.ToString();
         }
-        /// <summary>
-        /// 判斷是否為有效網址
-        /// </summary>
-        /// <param name="uri"></param>
-        /// <returns></returns>
-        public static bool IsValidUri(string uri)
-        {
-            Uri validatedUri;
-            return Uri.TryCreate(uri, UriKind.RelativeOrAbsolute, out validatedUri);
-        }
+
+        /// <summary>判斷是否為有效網址</summary>
+        public static bool IsValidUri(string? uri) =>
+            !string.IsNullOrEmpty(uri) && Uri.TryCreate(uri, UriKind.RelativeOrAbsolute, out _);
     }
 }

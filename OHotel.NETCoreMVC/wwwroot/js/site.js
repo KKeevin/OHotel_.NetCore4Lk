@@ -1,39 +1,16 @@
-﻿//-------------------------------------------
-//                  New Added
-//-------------------------------------------
-// 獲得網址裡controller和action
+// 取得目前網址的 controller 與 action
 function getCurrentControllerAndAction() {
-    // 取得網址路徑
     const path = window.location.pathname;
-    // 如果沒有網址路徑，則返回 null
-    if (!path) {
-        return null;
-    }
-    // 解析網址路徑，取得控制器和動作
+    if (!path) return null;
     const parts = path.split('/').filter(Boolean);
     let controller = parts[1];
     let action = parts[2] || null;
-    // 如果控制器存在，則返回它和可能的動作；否則返回 null
     if (controller && controller.toLowerCase() === 'sys') {
         controller = parts[2];
         action = parts[3] || null;
     }
     return controller ? { controller, action } : null;
 }
-//function getCurrentControllerAndAction() {
-//    // 取得網址路徑
-//    const path = window.location.pathname;
-//    // 如果沒有網址路徑，則返回 null
-//    if (!path) {
-//        return null;
-//    }
-//    // 解析網址路徑，取得控制器和動作
-//    const parts = path.split('/').filter(Boolean);
-//    const controller = parts[0];
-//    const action = parts[1] || null;
-//    // 如果控制器存在，則返回它和可能的動作；否則返回 null
-//    return controller ? { controller, action } : null;
-//}
 
 // [小工具] Alert要顯示什麼, 多久顯示
 function showAlert(message, delay) {
@@ -51,8 +28,8 @@ window.onload = function () {
 
     /* 判斷 localStorage 的 Token 跳轉為登入頁面與否 */
     const token = localStorage.getItem('Token');
-    const loginPageUrl = '/Sys/login';
-    const homePageUrl = '/Sys/home';
+    const loginPageUrl = '/Sys/Login';
+    const homePageUrl = '/Sys/Welcome';
 
     if (!token || token === 'undefined') {
         if (window.location.pathname !== loginPageUrl) {
@@ -116,33 +93,7 @@ $(function () {
             });
         }
     });
-    //滑鼠滾動
-    //var count = 0;
-    //$("#scroll_list").mousewheel(function (event, delta) {
-    //    // delta 若是負值是滾輪往下滾；反之則是滾輪往上滾
-    //    if (delta > 0) {
-    //        //網上
-    //        if ($(".li_selected").length > 0) {
-    //            $index = $(".order_li").index($(".li_selected"));
-    //            if ($index > 0) {
-    //                $(".order_li").eq($index).insertBefore($(".order_li").eq($index - 1));
-    //                $("#scroll_list ul").stop().animate({
-    //                    scrollTop: $(".order_li").height() * ($index - 1)
-    //                });
-    //            }
-    //        }
-    //    } else {
-    //        //網下
-    //        if ($(".li_selected").length > 0) {
-    //            $index = $(".order_li").index($(".li_selected"));
-    //            $(".order_li").eq($index).insertAfter($(".order_li").eq($index + 1));
-    //            $("#scroll_list ul").stop().animate({
-    //                scrollTop: $(".order_li").height() * ($index + 1)
-    //            });
-    //        }
-    //    }
-    //});
-    //確認修改
+    // 確認修改
     $(document).on("click", "#order_ok", function () {
         var Tmp = "";
         var all_size = $(".order_li").length;
